@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Secure Express Trip Parser</title>
+  <title>Secure Express Trip Parser - Enhanced</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -37,10 +37,22 @@
       background: white;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-       }
+    th, td {
+           border: 1px solid #ccc;
+    }
     th {
       background: #007bff;
       color: white;
+    }
+    #loadingSpinner {
+      display: none;
+      text-align: center;
+      margin: 20px;
+    }
+    #pagination {
+      text-align: center;
+      margin-top: 20px;
+      display: none;
     }
   </style>
 </head>
@@ -49,6 +61,8 @@
   <textarea id="inputText" placeholder="Paste your trip details here..."></textarea>
   <button onclick="parseTrips()">Generate Itinerary</button>
   <button onclick="window.print()">Print / Save as PDF</button>
+
+  <div id="loadingSpinner">Parsing trips, please wait...</div>
 
   <table id="itineraryTable" style="display:none">
     <thead>
@@ -63,58 +77,31 @@
     <tbody></tbody>
   </table>
 
+  <div id="pagination"></div>
+
   <script>
-    function parseTrips() {
-      const input = document.getElementById("inputText").value;
-      const blocks = input.split(/\n(?=Online\s\|)/g).filter(b => b.trim().length > 0);
-      const trips = [];
-
-      blocks.forEach(block => {
-        const timeMatch = block.match(/Pickup Time\s*(\d{1,2}:\d{2}\s*[APMapm]*)/);
-        const clientMatch = block.match(/Client:\s*(.*?)\s*(\+27|\d)/);
-        const driverMatch = block.match(/Driver:\s*@Secure Express:\s*(.+)/);
-        const pickupMatch = block.match(/Pickup:\s*(.+)/);
-        const dropoffMatch = block.match(/Drop off:\s*(.+)/);
-
-        const time = timeMatch ? timeMatch[1].trim() : "-";
-        const client = clientMatch ? clientMatch[1].trim() : "-";
-        const driver = driverMatch ? driverMatch[1].trim() : "-";
-        const pickup = pickupMatch ? pickupMatch[1].trim() : "-";
-        const dropoff = dropoffMatch ? dropoffMatch[1].trim() : "-";
-
-        trips.push({ time, client, driver, pickup, dropoff });
-      });
-
-      // Sort trips by time
-      trips.sort((a, b) => {
-        const parseTime = t => {
-          const [hour, minute] = t.replace(/[^\d:]/g, "").split(":").map(Number);
-          const isPM = /PM/i.test(t);
-          return (isPM && hour < 12 ? hour + 12 : hour) * 60 + minute;
-        };
-        return parseTime(a.time) - parseTime(b.time);
-      });
-
-      const table = document.getElementById("itineraryTable");
-      const tbody = table.querySelector("tbody");
-      tbody.innerHTML = "";
-
-      trips.forEach(trip => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${trip.time}</td>
-          <td>${trip.client}</td>
-          <td>${trip.driver}</td>
-          <td>${trip.pickup}</td>
-          <td>${trip.dropoff}</td>
-        `;
-        tbody.appendChild(row);
-      });
-
-      if (trips.length > 0) {
-        table.style.display = "table";
-      }
+    function sanitize(text) {
+      return text.replace(/[^\x20-\x7E\n]/g, '').trim();
     }
-  </script>
-</body>
-</html>
+
+    function parseTimeToMinutes(t) {
+      if (!t) return 0;
+      const match = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+      if (!match) return 0;
+      let [_, hour, minute, period] = match;
+      hour = parseInt(hour);
+      minute = parseInt(minute);
+      if (period && /PM/i.test(period) && hour < 12) hour += 12;
+      return hour * 60 + parseInt(minute);
+    }
+
+    function parseTrips() {
+      document.getElementById("loadingSpinner").style.display = "block";
+      setTimeout(() => {
+        const input = sanitize(document.getElementById("inputText").value);
+        const blocks = input.split(/(?=Online \\|)/g).filter(b => b.trim().length > 0);
+        const trips = [];
+
+        blocks.forEach(block => {
+          try {
+            const timeMatch = block.match(/Pickup Time\\s*(\\d{
