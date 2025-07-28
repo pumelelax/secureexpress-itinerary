@@ -4,54 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Secure Express Trip Parser</title>
+  https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    textarea {
-      width: 100%;
-      height: 200px;
-      margin: 20px 0;
-      padding: 10px;
-      font-size: 16px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      margin-right: 10px;
-    }
-    table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-      background: white;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    th, td {
-      padding: 12px;
-      border: 1px solid #ccc;
-    }
-    th {
-      background: #007bff;
-      color: white;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f2f5; }
+    h1 { text-align: center; }
+    textarea { width: 100%; height: 200px; margin: 20px 0; padding: 10px; font-size: 16px; }
+    button { padding: 10px 20px; margin-right: 10px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    th, td { padding: 12px; border: 1px solid #ccc; }
+    th { background: #007bff; color: white; }
   </style>
 </head>
 <body>
   <h1>Secure Express - Trip Auto Parser</h1>
   <textarea id="inputText" placeholder="Paste your trip details here..."></textarea>
   <button onclick="parseTrips()">Generate Itinerary</button>
-  <button onclick="window.print()">Print / Save as PDF</button>
+  <button onclick="exportCSV()">Export CSV</button>
+  <button onclick="exportPDF()">Export PDF</button>
 
   <table id="itineraryTable" style="display:none">
     <thead>
@@ -67,59 +36,75 @@
   </table>
 
   <script>
+    let trips = [];
+
+    function sanitize(text) {
+      return text.replace(/[^\x20-\x7E\n]/g, '').trim();
+    }
+
     function parseTrips() {
-      const input = document.getElementById("inputText").value;
-      const blocks = input.split(/\n(?=\*?\w+\s+\|\s+(Online|Offline)\s+\|)/g).filter(b => b.trim().length > 0);
-      const trips = [];
+      const input = sanitize(document.getElementById("inputText").value);
+      const blocks = input.split(/\n(?=\\*?\\w+\\s+\\|)/g).filter(b => b.trim().length > 0);
+      trips = [];
 
       blocks.forEach(block => {
-        const timeMatch = block.match(/Pickup Time[:\s]*(\d{1,2}:\d{2}\s*[APMapm]*)/);
-        const clientMatch = block.match(/Client[:\s]*(.+?)\s*(\||\s*|\n)/);
-        const driverMatch = block.match(/Driver[:\s]*(.+)/);
-        const pickupMatch = block.match(/Pickup[:\s]*(.+?)(\n|\|)/);
-        const dropoffMatch = block.match(/Drop off[:\s]*(.+)/);
-
-        const time = timeMatch ? timeMatch[1].trim() : "-";
-        const client = clientMatch ? clientMatch[1].trim() : "-";
-        const driver = driverMatch ? driverMatch[1].trim() : "-";
-        const pickup = pickupMatch ? pickupMatch[1].trim() : "-";
-        const dropoff = dropoffMatch ? dropoffMatch[1].trim() : "-";
+        const time = (block.match(/Pickup Time[:\\s]*(\\d{1,2}:\\d{2}\\s*[APMapm]*)/) || [])[1] || "-";
+        const client = (block.match(/Client[:\\s]*(.+?)(\\||\\n)/) || [])[1] || "-";
+        const driver = (block.match(/Driver[:\\s]*(.+)/) || [])[1] || "-";
+        const pickup = (block.match(/Pickup[:\\s]*(.+?)(\\||\\n)/) || [])[1] || "-";
+        const dropoff = (block.match(/Drop off[:\\s]*(.+)/) || [])[1] || "-";
 
         trips.push({ time, client, driver, pickup, dropoff });
       });
 
       trips.sort((a, b) => {
         const parseTime = t => {
-          const match = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+          const match = t.match(/(\\d{1,2}):(\\d{2})\\s*(AM|PM)?/i);
           if (!match) return 0;
-          let hour = parseInt(match[1]);
-          const minute = parseInt(match[2]);
-          const period = match[3];
-          if (period && /PM/i.test(period) && hour < 12) hour += 12;
+          let hour = parseInt(match[1]), minute = parseInt(match[2]);
+          if (/PM/i.test(match[3]) && hour < 12) hour += 12;
           return hour * 60 + minute;
         };
         return parseTime(a.time) - parseTime(b.time);
       });
 
-      const table = document.getElementById("itineraryTable");
-      const tbody = table.querySelector("tbody");
+      const tbody = document.querySelector("#itineraryTable tbody");
       tbody.innerHTML = "";
-
       trips.forEach(trip => {
         const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${trip.time}</td>
-          <td>${trip.client}</td>
-          <td>${trip.driver}</td>
-          <td>${trip.pickup}</td>
-          <td>${trip.dropoff}</td>
-        `;
+        row.innerHTML = `<td>${trip.time}</td><td>${trip.client}</td><td>${trip.driver}</td><td>${trip.pickup}</td><td>${trip.dropoff}</td>`;
         tbody.appendChild(row);
       });
 
-      if (trips.length > 0) {
-        table.style.display = "table";
-      }
+      document.getElementById("itineraryTable").style.display = "table";
+    }
+
+    function exportCSV() {
+      let csv = "Time,Client,Driver,Pickup,Drop-off\\n";
+      trips.forEach(trip => {
+        csv += `${trip.time},${trip.client},${trip.driver},${trip.pickup},${trip.dropoff}\\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = "SecureExpress_Trips.csv";
+      link.click();
+    }
+
+    function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(12);
+      doc.text("Secure Express Trip Itinerary", 10, 10);
+      let y = 20;
+      trips.forEach(trip => {
+        doc.text(`Time: ${trip.time}`, 10, y); y += 6;
+        doc.text(`Client: ${trip.client}`, 10, y); y += 6;
+        doc.text(`Driver: ${trip.driver}`, 10, y); y += 6;
+        doc.text(`Pickup: ${trip.pickup}`, 10, y); y += 6;
+        doc.text(`Drop-off: ${trip.dropoff}`, 10, y); y += 10;
+      });
+      doc.save("SecureExpress_Trips.pdf");
     }
   </script>
 </body>
