@@ -8,9 +8,10 @@
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #f0f2f5; }
     h1 { text-align: center; }
-    textarea { width: 100%; height: 200px; margin: 20px 0; padding: 10px; font-size: 16px; }
+    textarea, input[type="text"] { width: 100%; margin: 10px 0; padding: 10px; font-size: 16px; }
+    textarea { height: 200px; }
     button { padding: 10px 20px; margin-right: 10px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     th, td { padding: 12px; border: 1px solid #ccc; }
     th { background: #007bff; color: white; }
   </style>
@@ -21,6 +22,8 @@
   <button onclick="parseTrips()">Generate Itinerary</button>
   <button onclick="exportCSV()">Export CSV</button>
   <button onclick="exportPDF()">Export PDF</button>
+
+  <input type="text" id="searchInput" placeholder="Search trips..." onkeyup="filterTrips()" />
 
   <table id="itineraryTable" style="display:none">
     <thead>
@@ -77,6 +80,15 @@
       });
 
       document.getElementById("itineraryTable").style.display = "table";
+    }
+
+    function filterTrips() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#itineraryTable tbody tr");
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(query) ? "" : "none";
+      });
     }
 
     function exportCSV() {
