@@ -1,112 +1,187 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Secure Express Trip Parser</title>
-  <style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Secure Express Trip Parser</title>
+<style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      padding: 20px;
+        font-family: Arial, sans-serif;
+        background: #f0f2f5;
+        padding: 20px;
     }
     h1 {
-      text-align: center;
+        text-align: center;
     }
-    textarea {
-      width: 100%;
-      height: 200px;
-      margin: 20px 0;
-      padding: 10px;
-      font-size: 16px;
+    #logo {
+        display: block;
+        margin: 0 auto 20px auto;
+        max-width: 150px;
     }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      margin-right: 10px;
+    .instructions {
+        background: #fff3cd;
+        padding: 10px;
+        border-left: 5px solid #ffeeba;
+        margin-bottom: 20px;
+    }
+    form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    form input {
+        flex: 1 1 150px;
+        padding: 8px;
+        font-size: 14px;
+    }
+    form button {
+        padding: 10px 20px;
+        font-size: 14px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    #searchBar {
+        margin-bottom: 10px;
+        padding: 8px;
+        width: 100%;
+        font-size: 14px;
     }
     table {
-      width: 100%;
-      margin-top: 20px;
-      border-collapse: collapse;
-      background: white;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     th, td {
-      padding: 12px;
-      border: 1px solid #ccc;
+        padding: 12px;
+        border: 1px solid #ccc;
+        text-align: left;
     }
     th {
-      background: #007bff;
-      color: white;
+        background: #007bff;
+        color: white;
     }
-    #buttonGroup {
-      margin-bottom: 20px;
+    .upcoming {
+        background-color: #d4edda;
     }
-  </style>
+</style>
 </head>
 <body>
-  <h1>Secure Express - Trip Auto Parser</h1>
-  <textarea id="inputText" placeholder="Paste your trip details here..."></textarea>
-  <div id="buttonGroup">
-    <button onclick="parseTrips()">Generate Itinerary</button>
-    <button onclick="window.print()">Print / Save as PDF</button>
-  </div>
 
-  <table id="itineraryTable" style="display:none">
+<img id="logo" src="secure_express_logo.png" alt="Secure Express Logo" />
+<h1>Secure Express - Trip Auto Parser</h1>
+
+<div class="instructions">
+    Enter trip details below. Trips will be sorted by time and upcoming trips will be highlighted. You can also search and export the itinerary.
+</div>
+
+<form id="tripForm">
+    <input type="time" id="time" placeholder="Time" required />
+    <input type="text" id="client" placeholder="Client" required />
+    <input type="text" id="driver" placeholder="Driver" required />
+    <input type="text" id="pickup" placeholder="Pickup" required />
+    <input type="text" id="dropoff" placeholder="Drop-off" required />
+    <button type="submit">Add Trip</button>
+</form>
+
+<input type="text" id="searchBar" placeholder="Search trips..." onkeyup="filterTrips()" />
+
+<button onclick="exportPDF()">Export as PDF</button>
+
+<table id="itineraryTable">
     <thead>
-      <tr>
-        <th>Time</th>
-        <th>Client</th>
-        <th>Driver</th>
-        <th>Pickup</th>
-        <th>Drop-off</th>
-      </tr>
+        <tr>
+            <th>Time</th>
+            <th>Client</th>
+            <th>Driver</th>
+            <th>Pickup</th>
+            <th>Drop-off</th>
+        </tr>
     </thead>
     <tbody></tbody>
-  </table>
+</table>
 
-  <script>
-    function parseTrips() {
-      const input = document.getElementById("inputText").value;
-      const trips = input.split(/\*.*?\|.*?\|.*?\*/g).filter(t => t.trim().length > 0);
-      const table = document.getElementById("itineraryTable");
-      const tbody = table.querySelector("tbody");
-      tbody.innerHTML = "";
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    const form = document.getElementById('tripForm');
+    const tableBody = document.querySelector('#itineraryTable tbody');
 
-      trips.forEach(block => {
-        const timeMatch = block.match(/Pickup Time:\s*(\d{1,2}:\d{2})/i);
-        const clientMatch = block.match(/Client:\s*(.+?)\s*\|/i);
-        const driverMatch = block.match(/Driver:\s*(.+)/i);
-        const pickupMatch = block.match(/Pickup:\s*(.+?)\s*\|/i);
-        const dropoffMatch = block.match(/Drop off:\s*(.+)/i);
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const time = document.getElementById('time').value;
+        const client = document.getElementById('client').value;
+        const driver = document.getElementById('driver').value;
+        const pickup = document.getElementById('pickup').value;
+        const dropoff = document.getElementById('dropoff').value;
 
-        const time = timeMatch ? timeMatch[1] : "-";
-        const client = clientMatch ? clientMatch[1] : "-";
-        const driver = driverMatch ? driverMatch[1] : "-";
-        const pickup = pickupMatch ? pickupMatch[1] : "-";
-        const dropoff = dropoffMatch ? dropoffMatch[1] : "-";
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${time}</td><td>${client}</td><td>${driver}</td><td>${pickup}</td><td>${dropoff}</td>`;
+        tableBody.appendChild(row);
 
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${time}</td>
-          <td>${client}</td>
-          <td>${driver}</td>
-          <td>${pickup}</td>
-          <td>${dropoff}</td>
-        `;
-        tbody.appendChild(row);
-      });
+        sortTable();
+        highlightUpcoming();
+        form.reset();
+    });
 
-      if (trips.length > 0) {
-        table.style.display = "table";
-      }
+    function sortTable() {
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        rows.sort((a, b) => {
+            const timeA = a.cells[0].innerText;
+            const timeB = b.cells[0].innerText;
+            return timeA.localeCompare(timeB);
+        });
+        tableBody.innerHTML = '';
+        rows.forEach(row => tableBody.appendChild(row));
     }
-  </script>
+
+    function highlightUpcoming() {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+
+        Array.from(tableBody.querySelectorAll('tr')).forEach(row => {
+            const timeText = row.cells[0].innerText;
+            const [hour, minute] = timeText.split(':').map(Number);
+            const tripTime = new Date();
+            tripTime.setHours(hour, minute, 0);
+
+            const diff = (tripTime - now) / (1000 * 60); // difference in minutes
+            if (diff >= 0 && diff <= 60) {
+                row.classList.add('upcoming');
+            } else {
+                row.classList.remove('upcoming');
+            }
+        });
+    }
+
+    function filterTrips() {
+        const query = document.getElementById('searchBar').value.toLowerCase();
+        Array.from(tableBody.querySelectorAll('tr')).forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    }
+
+    function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("Secure Express - Trip Itinerary", 10, 10);
+
+        let y = 20;
+        Array.from(tableBody.querySelectorAll('tr')).forEach(row => {
+            const text = Array.from(row.cells).map(cell => cell.innerText).join(" | ");
+            doc.text(text, 10, y);
+            y += 10;
+        });
+
+        doc.save("SecureExpress_Itinerary.pdf");
+    }
+</script>
+
 </body>
 </html>
