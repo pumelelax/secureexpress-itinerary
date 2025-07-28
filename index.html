@@ -10,7 +10,7 @@
     h1 { text-align: center; }
     textarea { width: 100%; height: 200px; margin: 20px 0; padding: 10px; font-size: 16px; }
     button { padding: 10px 20px; margin-right: 10px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    table { width: 100%; margin-top: 20px; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     th, td { padding: 12px; border: 1px solid #ccc; }
     th { background: #007bff; color: white; }
   </style>
@@ -44,22 +44,22 @@
 
     function parseTrips() {
       const input = sanitize(document.getElementById("inputText").value);
-      const blocks = input.split(/\n(?=\\*?\\w+\\s+\\|)/g).filter(b => b.trim().length > 0);
+      const blocks = input.split(/\n(?=\*?\w+\s+\|)/g).filter(b => b.trim().length > 0);
       trips = [];
 
       blocks.forEach(block => {
-        const time = (block.match(/Pickup Time[:\\s]*(\\d{1,2}:\\d{2}\\s*[APMapm]*)/) || [])[1] || "-";
-        const client = (block.match(/Client[:\\s]*(.+?)(\\||\\n)/) || [])[1] || "-";
-        const driver = (block.match(/Driver[:\\s]*(.+)/) || [])[1] || "-";
-        const pickup = (block.match(/Pickup[:\\s]*(.+?)(\\||\\n)/) || [])[1] || "-";
-        const dropoff = (block.match(/Drop off[:\\s]*(.+)/) || [])[1] || "-";
+        const time = (block.match(/Pickup Time[:\s]*(\d{1,2}:\d{2}\s*[APMapm]*)/) || [])[1] || "-";
+        const client = (block.match(/Client[:\s]*(.+?)(\n|$)/) || [])[1] || "-";
+        const driver = (block.match(/Driver[:\s]*(.+?)(\n|$)/) || [])[1] || "-";
+        const pickup = (block.match(/Pickup[:\s]*(.+?)(\n|$)/) || [])[1] || "-";
+        const dropoff = (block.match(/Drop off[:\s]*(.+?)(\n|$)/) || [])[1] || "-";
 
         trips.push({ time, client, driver, pickup, dropoff });
       });
 
       trips.sort((a, b) => {
         const parseTime = t => {
-          const match = t.match(/(\\d{1,2}):(\\d{2})\\s*(AM|PM)?/i);
+          const match = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
           if (!match) return 0;
           let hour = parseInt(match[1]), minute = parseInt(match[2]);
           if (/PM/i.test(match[3]) && hour < 12) hour += 12;
@@ -80,9 +80,9 @@
     }
 
     function exportCSV() {
-      let csv = "Time,Client,Driver,Pickup,Drop-off\\n";
+      let csv = "Time,Client,Driver,Pickup,Drop-off\n";
       trips.forEach(trip => {
-        csv += `${trip.time},${trip.client},${trip.driver},${trip.pickup},${trip.dropoff}\\n`;
+        csv += `${trip.time},${trip.client},${trip.driver},${trip.pickup},${trip.dropoff}\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv' });
       const link = document.createElement('a');
