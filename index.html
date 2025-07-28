@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Express Trip Parser</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      margin: 20px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    #buttonGroup {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Secure Express - Trip Auto Parser</h1>
+  <textarea id="inputText" placeholder="Paste your trip details here..."></textarea>
+  <div id="buttonGroup">
+    <button onclick="parseTrips()">Generate Itinerary</button>
+    <button onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+  <table id="itineraryTable" style="display:none">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Client</th>
+        <th>Driver</th>
+        <th>Pickup</th>
+        <th>Drop-off</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    function parseTrips() {
+      const input = document.getElementById("inputText").value;
+      const trips = input.split(/\*.*?\|.*?\|.*?\*/g).filter(t => t.trim().length > 0);
+      const table = document.getElementById("itineraryTable");
+      const tbody = table.querySelector("tbody");
+      tbody.innerHTML = "";
+
+      trips.forEach(block => {
+        const timeMatch = block.match(/Pickup Time:\s*(\d{1,2}:\d{2})/i);
+        const clientMatch = block.match(/Client:\s*(.+?)\s*\|/i);
+        const driverMatch = block.match(/Driver:\s*(.+)/i);
+        const pickupMatch = block.match(/Pickup:\s*(.+?)\s*\|/i);
+        const dropoffMatch = block.match(/Drop off:\s*(.+)/i);
+
+        const time = timeMatch ? timeMatch[1] : "-";
+        const client = clientMatch ? clientMatch[1] : "-";
+        const driver = driverMatch ? driverMatch[1] : "-";
+        const pickup = pickupMatch ? pickupMatch[1] : "-";
+        const dropoff = dropoffMatch ? dropoffMatch[1] : "-";
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${time}</td>
+          <td>${client}</td>
+          <td>${driver}</td>
+          <td>${pickup}</td>
+          <td>${dropoff}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      if (trips.length > 0) {
+        table.style.display = "table";
+      }
+    }
+  </script>
+</body>
+</html>
