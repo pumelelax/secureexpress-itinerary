@@ -138,6 +138,17 @@
       document.getElementById("resultName").innerText = name;
       document.getElementById("wpm").innerText = wpm;
       document.getElementById("excelScore").innerText = score;
+
+      // Create downloadable text file
+      const resultText = `CSS Practical Test Results\n\nCandidate Name: ${name}\nTyping Speed: ${wpm} WPM\nExcel Quiz Score: ${score}/5\n`;
+      const blob = new Blob([resultText], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${name.replace(/\s+/g, '_')}_CSS_Test_Results.txt`;
+      link.textContent = "Download Your Results";
+      link.style.display = "block";
+      link.style.marginTop = "10px";
+      document.getElementById("results").appendChild(link);
     }
   </script>
 
