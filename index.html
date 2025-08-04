@@ -5,116 +5,120 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Secure Express Assessment</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1, h2 {
-      color: #d32f2f;
-    }
-    .hidden {
-      display: none;
-    }
-    .typing-area {
-      border: 1px solid #ccc;
-      padding: 15px;
-      border-radius: 5px;
-      background: #fefefe;
-      line-height: 1.6;
-      margin-bottom: 10px;
-    }
-    .word {
-      padding: 2px 4px;
-      margin: 1px;
-      display: inline-block;
-    }
-    .correct {
-      background-color: #c8e6c9;
-    }
-    .incorrect {
-      background-color: #ffcdd2;
-    }
-    textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      font-size: 16px;
-    }
-    button {
-      background: #d32f2f;
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      margin-top: 10px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    button:hover {
-      background: #b71c1c;
-    }
-    @media screen and (max-width: 600px) {
-      .container {
-        padding: 15px;
-      }
-      textarea {
-        font-size: 14px;
-      }
-      button {
-        width: 100%;
-      }
-    }
-    .result {
-      margin-top: 20px;
-      border-top: 1px solid #ccc;
-      padding-top: 20px;
-    }
-    .logo {
-      display: block;
-      max-width: 200px;
-      margin: 0 auto 20px;
-    }
-    .instructions {
-      background: #e3f2fd;
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 20px;
+    body { font-family: Arial, sans-serif; margin:0; background:#f4f4f4; padding:0; }
+    .container { max-width:600px; margin:30px auto; background:#fff; padding:30px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
+    img.logo { max-width: 100%; height: auto; margin-bottom:20px; }
+    h1, h2 { color:#d32f2f; }
+    .hidden { display:none; }
+    input, textarea { width:100%; padding:10px; font-size:16px; margin-bottom:10px; }
+    button { background:#d32f2f; color:#fff; padding:10px 20px; border:none; cursor:pointer; font-size:16px; border-radius:5px; }
+    button:hover { background:#b71c1c; }
+    .question { margin-bottom:15px; }
+    .timer { float:right; font-weight:bold; }
+    .typing-area { border:1px solid #ccc; padding:15px; border-radius:5px; background:#fefefe; line-height:1.6; margin-bottom:10px; }
+    @media screen and (max-width:600px) {
+      .container { padding:15px;}
+      button { width:100%; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <img src="Black SE logo.jpg" alt="Secure Express Logo" class="logo" />
-    <h1>Secure Express Customer Service Assessment</h1>
-    <div class="instructions">
+    <div id="start-section">
+      <img src="Black SE logo.jpg" alt="Secure Express Logo" class="logo">
+      <h1>Secure Express Customer Service Assessment</h1>
+      <p>Please enter your name to begin:</p>
+      <input type="text" id="username" placeholder="Your Name" />
       <p><strong>Test Outline:</strong></p>
       <ul>
         <li>Excel Questions: <strong>2 Minutes</strong></li>
-        <li>Customer Service / IT Questions: <strong>5 Minutes</strong></li>
+        <li>IT/Customer Service Questions: <strong>5 Minutes</strong></li>
         <li>Typing Speed Test: <strong>2 Minutes</strong></li>
       </ul>
-      <p>Please enter your name below to begin the test sequence.</p>
+      <button onclick="startTest()">Start Test</button>
     </div>
-    <label for="username">Your Name</label>
-    <input type="text" id="username" placeholder="Enter your name" style="width:100%;padding:10px;font-size:16px;"/>
-    <button onclick="startTest()">Start Test</button>
+
+    <div id="excel-section" class="hidden">
+      <h2>Excel Questions <span class="timer" id="excel-timer">2:00</span></h2>
+      <div class="question">
+        <p>1. Which function is used to find the average in Excel?</p>
+        <label><input type="radio" name="q1" value="correct"> AVERAGE</label><br>
+        <label><input type="radio" name="q1" value="wrong"> SUM</label><br>
+        <label><input type="radio" name="q1" value="wrong"> COUNT</label>
+      </div>
+      <div class="question">
+        <p>2. What does CONCATENATE do?</p>
+        <label><input type="radio" name="q2" value="correct"> Joins text strings</label><br>
+        <label><input type="radio" name="q2" value="wrong"> Calculates sum</label><br>
+        <label><input type="radio" name="q2" value="wrong"> Sorts data</label>
+      </div>
+      <button onclick="submitExcel()">Submit Excel Section</button>
+    </div>
+
+    <div id="it-section" class="hidden">
+      <h2>IT / Customer Service Questions <span class="timer" id="it-timer">5:00</span></h2>
+      <div class="question">
+        <p>1. Client complains driver is 10 min late, vehicle 500 m away. Best first response?</p>
+        <label><input type="radio" name="q3" value="wrong"> Contact driver and call back.</label><br>
+        <label><input type="radio" name="q3" value="wrong"> It’s nearby, please wait.</label><br>
+        <label><input type="radio" name="q3" value="correct"> I see it's close, I'll update driver and confirm shortly.</label>
+      </div>
+      <div class="question">
+        <p>2. Client can't use app, needs urgent driver. What do you do?</p>
+        <label><input type="radio" name="q4" value="correct"> Dispatch driver manually, confirm with client, then report app issue.</label><br>
+        <label><input type="radio" name="q4" value="wrong"> Ask to reinstall app first.</label><br>
+        <label><input type="radio" name="q4" value="wrong"> Log issue and ask them to wait.</label>
+      </div>
+      <button onclick="submitIT()">Submit IT Section</button>
+    </div>
+
+    <div id="typing-section" class="hidden">
+      <h2>Typing Test <span class="timer" id="typing-timer">2:00</span></h2>
+      <div class="typing-area" id="text-to-type">
+        The quick brown fox jumps over the lazy dog. Secure Express ensures all clients arrive safely and on time with professional service.
+      </div>
+      <textarea id="typed-input" placeholder="Start typing here..."></textarea>
+      <button onclick="submitTyping()">Submit Typing</button>
+    </div>
+
+    <div id="result-section" class="hidden">
+      <h2>Test Results for <span id="user-result"></span></h2>
+      <p><strong>Excel Score:</strong> <span id="excel-score"></span>%</p>
+      <p><strong>IT/CSS Score:</strong> <span id="it-score"></span>%</p>
+      <p><strong>Typing Accuracy:</strong> <span id="typing-accuracy"></span>%</p>
+      <p><strong>Typing Speed:</strong> <span id="typing-speed"></span> words per minute</p>
+      <button onclick="downloadResults()">Download Result</button>
+    </div>
   </div>
 
   <script>
+    let username = '';
     function startTest() {
-      // Placeholder for future page transition to quiz/test sections
-      alert("Test sequence will now begin.");
-      // In real code: show next section, hide this one
+      username = document.getElementById("username").value.trim();
+      if (!username) return alert("Enter your name");
+      document.getElementById("start-section").classList.add("hidden");
+      document.getElementById("excel-section").classList.remove("hidden");
+      startTimer("excel-timer", 120, submitExcel);
     }
-  </script>
-</body>
-</html>
+
+    function submitExcel() {
+      document.getElementById("excel-section").classList.add("hidden");
+      document.getElementById("it-section").classList.remove("hidden");
+      startTimer("it-timer", 300, submitIT);
+    }
+
+    function submitIT() {
+      document.getElementById("it-section").classList.add("hidden");
+      document.getElementById("typing-section").classList.remove("hidden");
+      startTimer("typing-timer", 120, submitTyping);
+    }
+
+    function submitTyping() {
+      const original = document.getElementById("text-to-type").innerText.trim();
+      const typed = document.getElementById("typed-input").value.trim();
+      const originalWords = original.split(/\s+/);
+      const typedWords = typed.split(/\s+/);
+
+      let correct = 0;
+      for (let i = 0; i < typedWords.length; i++) {
+        if (typedWords[i] ===
