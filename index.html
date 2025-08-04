@@ -1,123 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Secure Express Trip Parser</title>
-  https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
+  <meta charset="UTF-8">
+  <title>CSS Practical Test</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f2f5; }
-    h1 { text-align: center; }
-    textarea, input[type="text"] { width: 100%; margin: 10px 0; padding: 10px; font-size: 16px; }
-    textarea { height: 200px; }
-    button { padding: 10px 20px; margin-right: 10px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    table { width: 100%; margin-top: 20px; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    th, td { padding: 12px; border: 1px solid #ccc; }
-    th { background: #007bff; color: white; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      color: #333;
+      padding: 20px;
+    }
+    h1 {
+      color: red;
+    }
+    .hidden {
+      display: none;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: red;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
   </style>
 </head>
 <body>
-  <h1>Secure Express - Trip Auto Parser</h1>
-  <textarea id="inputText" placeholder="Paste your trip details here..."></textarea>
-  <button onclick="parseTrips()">Generate Itinerary</button>
-  <button onclick="exportCSV()">Export CSV</button>
-  <button onclick="exportPDF()">Export PDF</button>
 
-  <input type="text" id="searchInput" placeholder="Search trips..." onkeyup="filterTrips()" />
+  <h1>CSS Practical Test</h1>
 
-  <table id="itineraryTable" style="display:none">
-    <thead>
-      <tr>
-        <th>Time</th>
-        <th>Client</th>
-        <th>Driver</th>
-        <th>Pickup</th>
-        <th>Drop-off</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <div id="start">
+    <label>Enter your name:</label><br>
+    <input type="text" id="candidateName"><br><br>
+    <button onclick="startTypingTest()">Start Test</button>
+  </div>
+
+  <div id="typingTest" class="hidden">
+    <h2>Typing Test (2 minutes)</h2>
+    <p id="paragraph">
+      Thank you for contacting our customer service team. We appreciate your patience and will do our best to resolve your issue promptly and professionally.
+    </p>
+    <textarea id="typedText" placeholder="Start typing here..."></textarea><br>
+    <p>Time left: <span id="timer">120</span> seconds</p>
+  </div>
+
+  <div id="excelTest" class="hidden">
+    <h2>Excel Formula Questions</h2>
+    <form id="excelForm">
+      <label>1. What formula adds values in cells A1 to A5?</label><br>
+      <input type="text" name="q1"><br><br>
+
+      <label>2. What formula returns the number of cells that are not empty in a range?</label><br>
+      <input type="text" name="q2"><br><br>
+
+      <label>3. What formula checks if a condition is true or false?</label><br>
+      <input type="text" name="q3"><br><br>
+
+      <label>4. What formula looks up a value in a table?</label><br>
+      <input type="text" name="q4"><br><br>
+
+      <label>5. What formula counts cells that meet a condition?</label><br>
+      <input type="text" name="q5"><br><br>
+
+      <button type="button" onclick="showResults()">Submit Answers</button>
+    </form>
+  </div>
+
+  <div id="results" class="hidden result">
+    <h2>Results</h2>
+    <p><strong>Name:</strong> <span id="resultName"></span></p>
+    <p><strong>Typing Speed:</strong> <span id="wpm"></span> WPM</p>
+    <p><strong>Excel Score:</strong> <span id="excelScore"></span>/5</p>
+  </div>
 
   <script>
-    let trips = [];
+    let timer;
+    let timeLeft = 120;
+    let startTime;
+    const paragraphText = document.getElementById("paragraph").innerText;
 
-    function sanitize(text) {
-      return text.replace(/[^\x20-\x7E\n]/g, '').trim();
+    function startTypingTest() {
+      const name = document.getElementById("candidateName").value.trim();
+      if (!name) return alert("Please enter your name.");
+
+      document.getElementById("start").classList.add("hidden");
+      document.getElementById("typingTest").classList.remove("hidden");
+      startTime = new Date();
+
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").innerText = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          document.getElementById("typingTest").classList.add("hidden");
+          document.getElementById("excelTest").classList.remove("hidden");
+        }
+      }, 1000);
     }
 
-    function parseTrips() {
-      const input = sanitize(document.getElementById("inputText").value);
-      const blocks = input.split(/\n(?=\*?\w+\s+\|)/g).filter(b => b.trim().length > 0);
-      trips = [];
+    function showResults() {
+      const name = document.getElementById("candidateName").value;
+      const typed = document.getElementById("typedText").value;
+      const wordsTyped = typed.trim().split(/\s+/).length;
+      const minutes = 2;
+      const wpm = Math.round(wordsTyped / minutes);
 
-      blocks.forEach(block => {
-        const time = (block.match(/Pickup Time[:\s]*(\d{1,2}:\d{2}\s*[APMapm]*)/) || [])[1] || "-";
-        const client = (block.match(/Client[:\s]*(.+?)(\n|$)/) || [])[1] || "-";
-        const driver = (block.match(/Driver[:\s]*(.+?)(\n|$)/) || [])[1] || "-";
-        const pickup = (block.match(/Pickup[:\s]*(.+?)(\n|$)/) || [])[1] || "-";
-        const dropoff = (block.match(/Drop off[:\s]*(.+?)(\n|$)/) || [])[1] || "-";
+      const answers = {
+        q1: "SUM(A1:A5)",
+        q2: "COUNTA",
+        q3: "IF",
+        q4: "VLOOKUP",
+        q5: "COUNTIF"
+      };
 
-        trips.push({ time, client, driver, pickup, dropoff });
-      });
+      let score = 0;
+      const form = document.getElementById("excelForm");
+      for (let key in answers) {
+        const userAnswer = form[key].value.trim().toUpperCase();
+        if (userAnswer === answers[key].toUpperCase()) score++;
+      }
 
-      trips.sort((a, b) => {
-        const parseTime = t => {
-          const match = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
-          if (!match) return 0;
-          let hour = parseInt(match[1]), minute = parseInt(match[2]);
-          if (/PM/i.test(match[3]) && hour < 12) hour += 12;
-          return hour * 60 + minute;
-        };
-        return parseTime(a.time) - parseTime(b.time);
-      });
-
-      const tbody = document.querySelector("#itineraryTable tbody");
-      tbody.innerHTML = "";
-      trips.forEach(trip => {
-        const row = document.createElement("tr");
-        row.innerHTML = `<td>${trip.time}</td><td>${trip.client}</td><td>${trip.driver}</td><td>${trip.pickup}</td><td>${trip.dropoff}</td>`;
-        tbody.appendChild(row);
-      });
-
-      document.getElementById("itineraryTable").style.display = "table";
-    }
-
-    function filterTrips() {
-      const query = document.getElementById("searchInput").value.toLowerCase();
-      const rows = document.querySelectorAll("#itineraryTable tbody tr");
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(query) ? "" : "none";
-      });
-    }
-
-    function exportCSV() {
-      let csv = "Time,Client,Driver,Pickup,Drop-off\n";
-      trips.forEach(trip => {
-        csv += `${trip.time},${trip.client},${trip.driver},${trip.pickup},${trip.dropoff}\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = "SecureExpress_Trips.csv";
-      link.click();
-    }
-
-    function exportPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.setFontSize(12);
-      doc.text("Secure Express Trip Itinerary", 10, 10);
-      let y = 20;
-      trips.forEach(trip => {
-        doc.text(`Time: ${trip.time}`, 10, y); y += 6;
-        doc.text(`Client: ${trip.client}`, 10, y); y += 6;
-        doc.text(`Driver: ${trip.driver}`, 10, y); y += 6;
-        doc.text(`Pickup: ${trip.pickup}`, 10, y); y += 6;
-        doc.text(`Drop-off: ${trip.dropoff}`, 10, y); y += 10;
-      });
-      doc.save("SecureExpress_Trips.pdf");
+      document.getElementById("excelTest").classList.add("hidden");
+      document.getElementById("results").classList.remove("hidden");
+      document.getElementById("resultName").innerText = name;
+      document.getElementById("wpm").innerText = wpm;
+      document.getElementById("excelScore").innerText = score;
     }
   </script>
+
 </body>
 </html>
