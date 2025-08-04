@@ -7,7 +7,242 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     body { font-family: 'Roboto', sans-serif; background:#f4f4f4; margin:0; padding:20px;}
-    .container { max-width:900px; margin:auto; background:#fff; padding:30px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
+    .container { max-width:900px; marg<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Express Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #f4f4f4;
+      color: #333;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2 {
+      margin-bottom: 20px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .question {
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #000;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #444;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 100%;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    img.logo {
+      width: 200px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+
+      img.logo {
+        width: 150px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <img class="logo" src="/mnt/data/Black SE logo.jpg" alt="Secure Express Logo">
+    <div id="intro">
+      <h1>Secure Express Customer Service Assessment</h1>
+      <p>Please enter your name to begin:</p>
+      <input type="text" id="username" placeholder="Your Name" />
+      <p><strong>Test Outline:</strong></p>
+      <ul>
+        <li>Excel Questions: 2 Minutes</li>
+        <li>IT/Customer Service Questions: 5 Minutes</li>
+        <li>Typing Speed Test: 2 Minutes</li>
+      </ul>
+      <button onclick="startExcelQuiz()">Start Test</button>
+    </div>
+
+    <div id="excelQuiz" class="hidden">
+      <h2>Excel Quiz (2 Minutes)</h2>
+      <div id="excelQuestions"></div>
+      <button onclick="endExcelQuiz()">Finish Excel Quiz</button>
+    </div>
+
+    <div id="itQuiz" class="hidden">
+      <h2>Customer Service & IT Quiz (5 Minutes)</h2>
+      <div id="itQuestions"></div>
+      <button onclick="endItQuiz()">Finish CS/IT Quiz</button>
+    </div>
+
+    <div id="typingTest" class="hidden">
+      <h2>Typing Test (2 Minutes)</h2>
+      <p id="textToType">Secure Express is committed to ensuring the highest standard of client safety and ride reliability.</p>
+      <textarea id="typingArea" rows="5" style="width: 100%; margin-top: 15px;"></textarea>
+      <p id="typingTimer">Time Remaining: 120 seconds</p>
+      <button onclick="endTypingTest()">Submit Typing Test</button>
+    </div>
+
+    <div id="results" class="hidden">
+      <h2>Results</h2>
+      <p id="finalScore"></p>
+      <button onclick="downloadResults()">Download Results</button>
+    </div>
+  </div>
+
+  <script>
+    const excelQuestions = [
+      { q: "What is Google Chrome used for?", a: ["A) Writing documents", "B) Sending emails", "C) Browsing the internet", "D) Creating spreadsheets"], correct: 2 },
+      { q: "What is Microsoft Outlook mainly used for?", a: ["A) Drawing pictures", "B) Editing videos", "C) Sending and receiving emails", "D) Writing reports"], correct: 2 },
+      { q: "What does Microsoft Excel help you do?", a: ["A) Watch movies", "B) Browse the internet", "C) Create and calculate spreadsheets", "D) Write letters"], correct: 2 },
+      { q: "Which program is best for writing formal letters or reports?", a: ["A) PowerPoint", "B) Excel", "C) WordPad", "D) Microsoft Word"], correct: 3 },
+      { q: "What is Microsoft PowerPoint used for?", a: ["A) Editing photos", "B) Making presentations", "C) Managing files", "D) Sending messages"], correct: 1 },
+      { q: "What does 'right-clicking' with the mouse usually do?", a: ["A) Selects text", "B) Opens a shortcut or context menu", "C) Opens a file", "D) Zooms in"], correct: 1 },
+      { q: "What does Ctrl + C do?", a: ["A) Cuts the text", "B) Copies the text", "C) Pastes the text", "D) Closes the program"], correct: 1 },
+      { q: "What does Ctrl + V do?", a: ["A) Views the document", "B) Pastes the copied or cut item", "C) Verifies spelling", "D) Opens a video"], correct: 1 },
+      { q: "What does Ctrl + X do?", a: ["A) Cuts the selected item", "B) Exits the window", "C) Extends the screen", "D) Copies the text"], correct: 0 },
+      { q: "What happens when you close a window without saving your document?", a: ["A) It saves automatically", "B) It sends an email", "C) You might lose your changes", "D) It prints the document"], correct: 2 },
+    ];
+
+    const itQuestions = [
+      {
+        q: "A client calls in complaining their driver is 10 minutes late. You see the vehicle is stationary 500m from the pickup location. What is the BEST first response?",
+        a: ["A) I will contact the driver and call you back.", "B) The vehicle is nearby; please wait.", "C) I can see the vehicle is close. I’ll update the driver and confirm.", "D) I will escalate this to operations immediately."],
+        correct: 2
+      },
+      {
+        q: "A driver calls to report a breakdown mid-trip with a VIP client onboard. What is your IMMEDIATE priority?",
+        a: ["A) Notify the client directly.", "B) Contact technical support first.", "C) Confirm safety, dispatch backup, notify operations.", "D) Wait for the driver to report."],
+        correct: 2
+      },
+      {
+        q: "A client emails saying they can’t use the app and urgently need a driver. What do you do?",
+        a: ["A) Ask them to reinstall first.", "B) Log issue for IT and follow up later.", "C) Manually dispatch and then report the issue.", "D) Send instructions PDF and wait."],
+        correct: 2
+      }
+    ];
+
+    let currentUser = "";
+    let excelScore = 0;
+    let itScore = 0;
+    let wpm = 0;
+    let typingStartTime;
+
+    function startExcelQuiz() {
+      currentUser = document.getElementById("username").value.trim();
+      if (!currentUser) return alert("Enter your name");
+      document.getElementById("intro").classList.add("hidden");
+      document.getElementById("excelQuiz").classList.remove("hidden");
+      displayQuestions("excelQuestions", excelQuestions);
+      setTimeout(endExcelQuiz, 120000);
+    }
+
+    function endExcelQuiz() {
+      document.getElementById("excelQuiz").classList.add("hidden");
+      document.getElementById("itQuiz").classList.remove("hidden");
+      scoreQuestions("excelQuestions", excelQuestions, score => excelScore = score);
+      displayQuestions("itQuestions", itQuestions);
+      setTimeout(endItQuiz, 300000);
+    }
+
+    function endItQuiz() {
+      document.getElementById("itQuiz").classList.add("hidden");
+      document.getElementById("typingTest").classList.remove("hidden");
+      typingStartTime = Date.now();
+      setTimeout(endTypingTest, 120000);
+    }
+
+    function endTypingTest() {
+      const textTyped = document.getElementById("typingArea").value.trim();
+      const wordCount = textTyped.split(/\s+/).length;
+      const timeSpent = (Date.now() - typingStartTime) / 60000;
+      wpm = Math.round(wordCount / timeSpent);
+      document.getElementById("typingTest").classList.add("hidden");
+      document.getElementById("results").classList.remove("hidden");
+      document.getElementById("finalScore").innerText = `${currentUser}, your score:\nExcel: ${excelScore}/${excelQuestions.length}\nCS/IT: ${itScore}/${itQuestions.length}\nTyping WPM: ${wpm}`;
+    }
+
+    function displayQuestions(containerId, questions) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      questions.forEach((q, i) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+        qDiv.innerHTML = `<p><strong>${i + 1}. ${q.q}</strong></p>` +
+          q.a.map((a, j) => `<label><input type="radio" name="q${containerId}${i}" value="${j}"> ${a}</label><br>`).join("");
+        container.appendChild(qDiv);
+      });
+    }
+
+    function scoreQuestions(containerId, questions, callback) {
+      let score = 0;
+      questions.forEach((q, i) => {
+        const radios = document.getElementsByName(`q${containerId}${i}`);
+        radios.forEach(r => {
+          if (r.checked && parseInt(r.value) === q.correct) score++;
+        });
+      });
+      callback(score);
+    }
+
+    function downloadResults() {
+      const blob = new Blob([document.getElementById("finalScore").innerText], { type: 'text/plain' });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${currentUser}_results.txt`;
+      a.click();
+    }
+  </script>
+</body>
+
+</html>
+in:auto; background:#fff; padding:30px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
     h1,h2 { color:#d32f2f; }
     .hidden { display:none; }
     .typing-area { border:1px solid #ccc; padding:15px; border-radius:5px; background:#fefefe; line-height:1.6; margin-bottom:10px; }
