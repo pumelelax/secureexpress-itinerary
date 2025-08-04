@@ -55,6 +55,7 @@
     </p>
     <textarea id="typedText" placeholder="Start typing here..."></textarea><br>
     <p>Time left: <span id="timer">120</span> seconds</p>
+    <button onclick="finishTypingEarly()">Finish Typing</button>
   </div>
 
   <div id="excelTest" class="hidden">
@@ -83,6 +84,7 @@
     <h2>Results</h2>
     <p><strong>Name:</strong> <span id="resultName"></span></p>
     <p><strong>Typing Speed:</strong> <span id="wpm"></span> WPM</p>
+    <p><strong>Typing Accuracy:</strong> <span id="accuracy"></span>%</p>
     <p><strong>Excel Score:</strong> <span id="excelScore"></span>/5</p>
   </div>
 
@@ -105,18 +107,38 @@
         document.getElementById("timer").innerText = timeLeft;
         if (timeLeft <= 0) {
           clearInterval(timer);
-          document.getElementById("typingTest").classList.add("hidden");
-          document.getElementById("excelTest").classList.remove("hidden");
+          proceedToExcelTest();
         }
       }, 1000);
+    }
+
+    function finishTypingEarly() {
+      clearInterval(timer);
+      proceedToExcelTest();
+    }
+
+    function proceedToExcelTest() {
+      document.getElementById("typingTest").classList.add("hidden");
+      document.getElementById("excelTest").classList.remove("hidden");
+    }
+
+    function calculateAccuracy(original, typed) {
+      const originalWords = original.trim().split(/\s+/);
+      const typedWords = typed.trim().split(/\s+/);
+      let correct = 0;
+      for (let i = 0; i < typedWords.length; i++) {
+        if (typedWords[i] === originalWords[i]) correct++;
+      }
+      return Math.round((correct / originalWords.length) * 100);
     }
 
     function showResults() {
       const name = document.getElementById("candidateName").value;
       const typed = document.getElementById("typedText").value;
       const wordsTyped = typed.trim().split(/\s+/).length;
-      const minutes = 2;
-      const wpm = Math.round(wordsTyped / minutes);
+      const durationMinutes = (120 - timeLeft) / 60 || 2;
+      const wpm = Math.round(wordsTyped / durationMinutes);
+      const accuracy = calculateAccuracy(paragraphText, typed);
 
       const answers = {
         q1: "SUM(A1:A5)",
@@ -137,10 +159,11 @@
       document.getElementById("results").classList.remove("hidden");
       document.getElementById("resultName").innerText = name;
       document.getElementById("wpm").innerText = wpm;
+      document.getElementById("accuracy").innerText = accuracy;
       document.getElementById("excelScore").innerText = score;
 
       // Create downloadable text file
-      const resultText = `CSS Practical Test Results\n\nCandidate Name: ${name}\nTyping Speed: ${wpm} WPM\nExcel Quiz Score: ${score}/5\n`;
+      const resultText = `CSS Practical Test Results\n\nCandidate Name: ${name}\nTyping Speed: ${wpm} WPM\nTyping Accuracy: ${accuracy}%\nExcel Quiz Score: ${score}/5\n`;
       const blob = new Blob([resultText], { type: "text/plain" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
