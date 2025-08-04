@@ -16,9 +16,11 @@
       max-width: 900px;
       margin: auto;
       background: #fff;
+      padding: 30px;
+      border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    h1, h2 {
+   , h2 {
       color: #d32f2f;
     }
     .hidden {
@@ -42,9 +44,7 @@
     }
     .incorrect {
       background-color: #ffcdd2;
-    }
-    textarea, input[type="text"] {
-      width: 100%;
+    width: 100%;
       padding: 10px;
       margin-top: 10px;
       font-size: 16px;
@@ -101,6 +101,7 @@
     <p><strong>Typing Speed:</strong> <span id="wpm"></span> WPM</p>
     <p><strong>Typing Accuracy:</strong> <span id="accuracy"></span>%</p>
     <p><strong>Excel Score:</strong> <span id="excelScore"></span>/10</p>
+    <a id="downloadLink" style="display:none;" download>Download Your Results</a>
   </div>
 </div>
 
@@ -160,3 +161,44 @@
   }
 
   function proceedToExcelTest() {
+    document.getElementById("typingTest").classList.add("hidden");
+    document.getElementById("excelTest").classList.remove("hidden");
+    loadQuiz();
+    quizTimer = setInterval(() => {
+      quizTimeLeft--;
+      document.getElementById("quizTimer").innerText = quizTimeLeft;
+      if (quizTimeLeft <= 0) {
+        clearInterval(quizTimer);
+        submitQuiz();
+      }
+    }, 1000);
+  }
+
+  const excelQuestions = [
+    { q: "Which formula adds values in cells A1 to A5?", a: "SUM(A1:A5)", options: ["SUM(A1:A5)", "ADD(A1:A5)", "TOTAL(A1:A5)"] },
+    { q: "Which formula counts non-empty cells?", a: "COUNTA", options: ["COUNT", "COUNTA", "COUNTIF"] },
+    { q: "Which formula checks a condition?", a: "IF", options: ["CHECK", "IF", "TEST"] },
+    { q: "Which formula looks up a value?", a: "VLOOKUP", options: ["SEARCH", "LOOKUP", "VLOOKUP"] },
+    { q: "Which formula counts cells that meet a condition?", a: "COUNTIF", options: ["COUNTIF", "SUMIF", "IFCOUNT"] },
+    { q: "Which formula returns the average?", a: "AVERAGE", options: ["MEAN", "AVERAGE", "AVG"] },
+    { q: "Which formula returns the highest value?", a: "MAX", options: ["MAX", "HIGH", "TOP"] },
+    { q: "Which formula returns the lowest value?", a: "MIN", options: ["LOW", "MIN", "BOTTOM"] },
+    { q: "Which formula joins text?", a: "CONCATENATE", options: ["JOIN", "CONCATENATE", "MERGE"] },
+    { q: "Which formula returns current date?", a: "TODAY()", options: ["NOW()", "DATE()", "TODAY()"] }
+  ];
+
+  function loadQuiz() {
+    const quizDiv = document.getElementById("quizQuestions");
+    excelQuestions.forEach((q, i) => {
+      const div = document.createElement("div");
+      div.innerHTML = `<label>${i + 1}. ${q.q}</label><br>` +
+        q.options.map(opt => `<input type="radio" name="q${i}" value="${opt}"> ${opt}`).join("<br>") + "<br><br>";
+      quizDiv.appendChild(div);
+    });
+  }
+
+  function submitQuiz() {
+    clearInterval(quizTimer);
+    const name = document.getElementById("candidateName").value;
+    const typed = document.getElementById("typedText").value;
+    const wordsTyped
