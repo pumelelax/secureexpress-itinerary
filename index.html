@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CSS Practical Test</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"  body {
+  https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap
+  <style>
+    body {
       font-family: 'Roboto', sans-serif;
       background-color: #f4f4f4;
       margin: 0;
       padding: 20px;
-    }
-    .container {
-      max-width: 900px;
+    max-width: 900px;
       margin: auto;
       background: #fff;
       padding: 30px;
@@ -38,7 +38,7 @@
       display: inline-block;
     }
     .correct {
-      background-color: #c8e6c9;
+      backgroundc8e6c9;
     }
     .incorrect {
       background-color: #ffcdd2;
@@ -85,3 +85,78 @@
     <p>Time left: <span id="timer">120</span> seconds</p>
     <button onclick="finishTypingEarly()">Finish Typing</button>
   </div>
+
+  <div id="excelTest" class="hidden">
+    <h2>Excel Quiz (30 seconds)</h2>
+    <form id="excelForm">
+      <div id="quizQuestions"></div>
+      <p>Time left: <span id="quizTimer">30</span> seconds</p>
+      <button type="button" onclick="submitQuiz()">Submit Quiz</button>
+    </form>
+  </div>
+
+  <div id="results" class="hidden result">
+    <h2>Results</h2>
+    <p><strong>Name:</strong> <span id="resultName"></span></p>
+    <p><strong>Typing Speed:</strong> <span id="wpm"></span> WPM</p>
+    <p><strong>Typing Accuracy:</strong> <span id="accuracy"></span>%</p>
+    <p><strong>Excel Score:</strong> <span id="excelScore"></span>/10</p>
+  </div>
+</div>
+
+<script>
+  let timer, quizTimer;
+  let timeLeft = 120;
+  let quizTimeLeft = 30;
+  const paragraphs = [
+    "Thank you for contacting our customer service team. We appreciate your patience and will do our best to resolve your issue promptly and professionally.",
+    "Our goal is to ensure every customer receives the highest level of support. If you have any further questions, please do not hesitate to reach out.",
+    "We value your feedback and strive to continuously improve our services. Your satisfaction is our top priority."
+  ];
+  const fullText = paragraphs.join(" ");
+  const words = fullText.split(" ");
+  const displayText = document.getElementById("displayText");
+
+  function renderWords() {
+    displayText.innerHTML = "";
+    words.forEach((word, i) => {
+      const span = document.createElement("span");
+      span.textContent = word + " ";
+      span.className = "word";
+      span.id = "word-" + i;
+      displayText.appendChild(span);
+    });
+  }
+
+  function startTypingTest() {
+    const name = document.getElementById("candidateName").value.trim();
+    if (!name) return alert("Please enter your name.");
+    document.getElementById("start").classList.add("hidden");
+    document.getElementById("typingTest").classList.remove("hidden");
+    renderWords();
+    timer = setInterval(() => {
+      timeLeft--;
+      document.getElementById("timer").innerText = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        proceedToExcelTest();
+      }
+    }, 1000);
+  }
+
+  function updateTyping() {
+    const typed = document.getElementById("typedText").value.trim().split(/\s+/);
+    typed.forEach((word, i) => {
+      const span = document.getElementById("word-" + i);
+      if (span) {
+        span.className = "word " + (word === words[i] ? "correct" : "incorrect");
+      }
+    });
+  }
+
+  function finishTypingEarly() {
+    clearInterval(timer);
+    proceedToExcelTest();
+  }
+
+  function
