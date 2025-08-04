@@ -39,4 +39,216 @@
       padding: 12px 20px;
       cursor: pointer;
       font-size: 16px;
-      border-
+      border-radius: 6px;
+      display: block;
+      margin: 10px auto;
+    }
+    button:hover {
+      background: #b71c1c;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .question p {
+      margin: 0 0 10px;
+    }
+    .result {
+      padding: 20px;
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      border-radius: 5px;
+    }
+    .typing-area {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 5px;
+      background: #fff;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+    }
+    @media screen and (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+      button {
+        width: 100%;
+      }
+    }
+    img.logo {
+      display: block;
+      max-width: 150px;
+      margin: 0 auto 20px;
+    }
+    .timer {
+      text-align: center;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="Black SE logo.jpg" alt="Secure Express Logo" class="logo">
+    <h1>Secure Express Assessment</h1>
+
+    <!-- NAME INPUT -->
+    <div id="intro">
+      <p>Please enter your name to begin:</p>
+      <input type="text" id="username" placeholder="Your Name" />
+      <h3>Test Outline:</h3>
+      <ul>
+        <li>Excel Questions: 2 Minutes</li>
+        <li>IT/Customer Service Questions: 5 Minutes</li>
+        <li>Typing Speed Test: 2 Minutes</li>
+      </ul>
+      <button onclick="startAssessment()">Start Test</button>
+    </div>
+
+    <!-- EXCEL QUIZ -->
+    <div id="excel" class="hidden">
+      <h2>Excel Quiz</h2>
+      <div class="timer" id="excelTimer"></div>
+      <div id="excelQuestions"></div>
+      <button onclick="nextSection('it')">Next: IT Quiz</button>
+    </div>
+
+    <!-- IT QUIZ -->
+    <div id="it" class="hidden">
+      <h2>IT / Customer Service Quiz</h2>
+      <div class="timer" id="itTimer"></div>
+      <div id="itQuestions"></div>
+      <button onclick="nextSection('typing')">Next: Typing Test</button>
+    </div>
+
+    <!-- TYPING TEST -->
+    <div id="typing" class="hidden">
+      <h2>Typing Speed Test</h2>
+      <div class="timer" id="typingTimer"></div>
+      <div class="typing-area" id="typingText">The Secure Express team is committed to safety, efficiency, and professional service in every ride.</div>
+      <textarea id="typingInput" placeholder="Start typing here..."></textarea>
+      <button onclick="endTypingTest()">Submit Typing</button>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results" class="hidden">
+      <h2>Results Summary</h2>
+      <div class="result" id="resultContent"></div>
+      <button onclick="downloadResults()">Download Results</button>
+    </div>
+  </div>
+
+  <script>
+    let username = '';
+    const excelQuestions = [
+      { q: "What does =SUM(A1:A5) do?", a: ["Adds values A1 to A5", "Counts cells", "Multiplies them", "Subtracts A5 from A1"], correct: 0 },
+      { q: "Which function returns the highest value?", a: ["=MIN()", "=MAX()", "=AVERAGE()", "=COUNT()"], correct: 1 }
+    ];
+    const itQuestions = [
+      { q: "What is Microsoft Excel used for?", a: ["Playing music", "Creating spreadsheets", "Sending emails", "Browsing web"], correct: 1 },
+      { q: "Ctrl + C is used to:", a: ["Cut", "Paste", "Copy", "Undo"], correct: 2 }
+    ];
+
+    let excelScore = 0, itScore = 0, typingScore = 0;
+
+    function startAssessment() {
+      username = document.getElementById("username").value.trim();
+      if (!username) return alert("Please enter your name.");
+      document.getElementById("intro").classList.add("hidden");
+      document.getElementById("excel").classList.remove("hidden");
+      loadQuestions('excelQuestions', excelQuestions);
+      startTimer('excelTimer', 120, () => nextSection('it'));
+    }
+
+    function loadQuestions(containerId, questions) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      questions.forEach((q, i) => {
+        let html = `<div class="question"><p>${i + 1}. ${q.q}</p>`;
+        q.a.forEach((opt, j) => {
+          html += `<label><input type="radio" name="${containerId}_${i}" value="${j}"> ${opt}</label><br>`;
+        });
+        html += `</div>`;
+        container.innerHTML += html;
+      });
+    }
+
+    function scoreQuiz(containerId, questions) {
+      let score = 0;
+      questions.forEach((q, i) => {
+        const radios = document.getElementsByName(`${containerId}_${i}`);
+        radios.forEach(r => {
+          if (r.checked && parseInt(r.value) === q.correct) score++;
+        });
+      });
+      return score;
+    }
+
+    function nextSection(next) {
+      if (next === 'it') {
+        excelScore = scoreQuiz('excelQuestions', excelQuestions);
+        document.getElementById("excel").classList.add("hidden");
+        document.getElementById("it").classList.remove("hidden");
+        loadQuestions('itQuestions', itQuestions);
+        startTimer('itTimer', 300, () => nextSection('typing'));
+      } else if (next === 'typing') {
+        itScore = scoreQuiz('itQuestions', itQuestions);
+        document.getElementById("it").classList.add("hidden");
+        document.getElementById("typing").classList.remove("hidden");
+        startTimer('typingTimer', 120, endTypingTest);
+      }
+    }
+
+    function endTypingTest() {
+      const original = document.getElementById("typingText").innerText.trim();
+      const typed = document.getElementById("typingInput").value.trim();
+      const origWords = original.split(/\s+/);
+      const typedWords = typed.split(/\s+/);
+      let correct = 0;
+      origWords.forEach((w, i) => { if (typedWords[i] === w) correct++; });
+      typingScore = Math.round((correct / origWords.length) * 100);
+      document.getElementById("typing").classList.add("hidden");
+      showResults();
+    }
+
+    function showResults() {
+      const content = `
+        <p><strong>Name:</strong> ${username}</p>
+        <p><strong>Excel Score:</strong> ${excelScore}/${excelQuestions.length}</p>
+        <p><strong>IT/CSS Score:</strong> ${itScore}/${itQuestions.length}</p>
+        <p><strong>Typing Accuracy:</strong> ${typingScore}%</p>
+      `;
+      document.getElementById("resultContent").innerHTML = content;
+      document.getElementById("results").classList.remove("hidden");
+    }
+
+    function downloadResults() {
+      const content = document.getElementById("resultContent").innerText;
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${username}_Assessment.txt`;
+      a.click();
+    }
+
+    function startTimer(id, seconds, callback) {
+      const timer = document.getElementById(id);
+      let remaining = seconds;
+      timer.innerText = `Time left: ${remaining}s`;
+      const interval = setInterval(() => {
+        remaining--;
+        timer.innerText = `Time left: ${remaining}s`;
+        if (remaining <= 0) {
+          clearInterval(interval);
+          callback();
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
