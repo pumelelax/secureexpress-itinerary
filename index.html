@@ -1,36 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CSS Practical Test</title>
-  https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap
-  <style>
-    body {
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"  body {
       font-family: 'Roboto', sans-serif;
-      background-color: #f9f9f9;
-      color: #333;
+      background-color: #f4f4f4;
       margin: 0;
       padding: 20px;
     }
-    h1, h2 {
-      color: #d32f2f;
-    }
     .container {
-      max-width: 800px;
+      max-width: 900px;
+      margin: auto;
       background: #fff;
       padding: 30px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+    h1, h2 {
+      color: #d32f2f;
+    }
     .hidden {
       display: none;
     }
-    textarea, input[type="text"], select {
+    .typing-area {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 5px;
+      background: #fefefe;
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+    .word {
+      padding: 2px 4px;
+      margin: 1px;
+      display: inline-block;
+    }
+    .correct {
+      background-color: #c8e6c9;
+    }
+    .incorrect {
+      background-color: #ffcdd2;
+    }
+    textarea, input[type="text"] {
       width: 100%;
       padding: 10px;
       margin-top: 10px;
-      margin-bottom-radius: 4px;
-      font-weight: bold;
+      font-size: 16px;
+    }
+    button {
+      background-color: #d32f2f;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      margin-top: 10px;
+      cursor: pointer;
+      font-size: 16px;
     }
     button:hover {
       background-color: #b71c1c;
@@ -43,130 +69,19 @@
   </style>
 </head>
 <body>
-
 <div class="container">
   <h1>CSS Practical Test</h1>
 
   <div id="start">
     <label>Enter your name:</label>
-    <input type="text" id="candidateName">
+    <input type="text" id="candidateName" />
     <button onclick="startTypingTest()">Start Typing Test</button>
   </div>
 
   <div id="typingTest" class="hidden">
     <h2>Typing Test (2 minutes)</h2>
-    <p id="paragraph">
-      Thank you for contacting our customer service team. We appreciate your patience and will do our best to resolve your issue promptly and professionally.
-    </p>
-    <textarea id="typedText" placeholder="Start typing here..."></textarea>
+    <div id="displayText" class="typing-area"></div>
+    <textarea id="typedText" placeholder="Start typing here..." oninput="updateTyping()"></textarea>
     <p>Time left: <span id="timer">120</span> seconds</p>
     <button onclick="finishTypingEarly()">Finish Typing</button>
   </div>
-
-  <div id="excelTest" class="hidden">
-    <h2>Excel Quiz (30 seconds)</h2>
-    <form id="excelForm">
-      <div id="quizQuestions"></div>
-      <p>Time left: <span id="quizTimer">30</span> seconds</p>
-      <button type="button" onclick="submitQuiz()">Submit Quiz</button>
-    </form>
-  </div>
-
-  <div id="results" class="hidden result">
-    <h2>Results</h2>
-    <p><strong>Name:</strong> <span id="resultName"></span></p>
-    <p><strong>Typing Speed:</strong> <span id="wpm"></span> WPM</p>
-    <p><strong>Typing Accuracy:</strong> <span id="accuracy"></span>%</p>
-    <p><strong>Excel Score:</strong> <span id="excelScore"></span>/10</p>
-  </div>
-</div>
-
-<script>
-  let timer, quizTimer;
-  let timeLeft = 120;
-  let quizTimeLeft = 30;
-  const paragraphText = document.getElementById("paragraph").innerText;
-  const excelQuestions = [
-    { q: "Which formula adds values in cells A1 to A5?", a: "SUM(A1:A5)", options: ["SUM(A1:A5)", "ADD(A1:A5)", "TOTAL(A1:A5)"] },
-    { q: "Which formula counts non-empty cells?", a: "COUNTA", options: ["COUNT", "COUNTA", "COUNTIF"] },
-    { q: "Which formula checks a condition?", a: "IF", options: ["CHECK", "IF", "TEST"] },
-    { q: "Which formula looks up a value?", a: "VLOOKUP", options: ["SEARCH", "LOOKUP", "VLOOKUP"] },
-    { q: "Which formula counts cells that meet a condition?", a: "COUNTIF", options: ["COUNTIF", "SUMIF", "IFCOUNT"] },
-    { q: "Which formula returns the average?", a: "AVERAGE", options: ["MEAN", "AVERAGE", "AVG"] },
-    { q: "Which formula returns the highest value?", a: "MAX", options: ["MAX", "HIGH", "TOP"] },
-    { q: "Which formula returns the lowest value?", a: "MIN", options: ["LOW", "MIN", "BOTTOM"] },
-    { q: "Which formula joins text?", a: "CONCATENATE", options: ["JOIN", "CONCATENATE", "MERGE"] },
-    { q: "Which formula returns current date?", a: "TODAY()", options: ["NOW()", "DATE()", "TODAY()"] }
-  ];
-
-  function startTypingTest() {
-    const name = document.getElementById("candidateName").value.trim();
-    if (!name) return alert("Please enter your name.");
-    document.getElementById("start").classList.add("hidden");
-    document.getElementById("typingTest").classList.remove("hidden");
-    timer = setInterval(() => {
-      timeLeft--;
-      document.getElementById("timer").innerText = timeLeft;
-      if (timeLeft <= 0) {
-        clearInterval(timer);
-        proceedToExcelTest();
-      }
-    }, 1000);
-  }
-
-  function finishTypingEarly() {
-    clearInterval(timer);
-    proceedToExcelTest();
-  }
-
-  function proceedToExcelTest() {
-    document.getElementById("typingTest").classList.add("hidden");
-    document.getElementById("excelTest").classList.remove("hidden");
-    loadQuiz();
-    quizTimer = setInterval(() => {
-      quizTimeLeft--;
-      document.getElementById("quizTimer").innerText = quizTimeLeft;
-      if (quizTimeLeft <= 0) {
-        clearInterval(quizTimer);
-        submitQuiz();
-      }
-    }, 1000);
-  }
-
-  function loadQuiz() {
-    const quizDiv = document.getElementById("quizQuestions");
-    excelQuestions.forEach((q, i) => {
-      const div = document.createElement("div");
-      div.innerHTML = `<label>${i + 1}. ${q.q}</label><br>` +
-        q.options.map(opt => `<input type="radio" name="q${i}" value="${opt}"> ${opt}`).join("<br>") + "<br><br>";
-      quizDiv.appendChild(div);
-    });
-  }
-
-  function calculateAccuracy(original, typed) {
-    const originalWords = original.trim().split(/\s+/);
-    const typedWords = typed.trim().split(/\s+/);
-    let correct = 0;
-    for (let i = 0; i < typedWords.length; i++) {
-      if (typedWords[i] === originalWords[i]) correct++;
-    }
-    return Math.round((correct / originalWords.length) * 100);
-  }
-
-  function submitQuiz() {
-    clearInterval(quizTimer);
-    const name = document.getElementById("candidateName").value;
-    const typed = document.getElementById("typedText").value;
-    const wordsTyped = typed.trim().split(/\s+/).length;
-    const durationMinutes = (120 - timeLeft) / 60 || 2;
-    const wpm = Math.round(wordsTyped / durationMinutes);
-    const accuracy = calculateAccuracy(paragraphText, typed);
-
-    let score = 0;
-    excelQuestions.forEach((q, i) => {
-      const selected = document.querySelector(`input[name="q${i}"]:checked`);
-      if (selected && selected.value === q.a) score++;
-    });
-
-    document.getElementById("excelTest").classList.add("hidden");
-    document
