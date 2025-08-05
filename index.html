@@ -79,4 +79,166 @@
       <h3>Test Outline:</h3>
       <ul>
         <li>Basic Computer Questions: <strong>2 Minutes</strong></li>
-        <li>IT/Customer Service Questions: <stro
+        <li>IT/Customer Service Questions: <strong>5 Minutes</strong></li>
+        <li>Typing Speed Test: <strong>2 Minutes</strong></li>
+      </ul>
+      <button onclick="startTest()">Start Test</button>
+    </div>
+
+    <div id="excel" class="hidden">
+      <h2>Basic Computer Questions (2 min)</h2>
+      <div id="excelTimer" class="timer"></div>
+      <div id="excelQuestions"></div>
+      <button onclick="submitExcel()">Next: IT & CSS</button>
+    </div>
+
+    <div id="it" class="hidden">
+      <h2>IT / Customer Service Questions (5 min)</h2>
+      <div id="itTimer" class="timer"></div>
+      <div id="itQuestions"></div>
+      <button onclick="submitIT()">Next: Typing Test</button>
+    </div>
+
+    <div id="typing" class="hidden">
+      <h2>Typing Speed Test (2 min)</h2>
+      <div id="typingTimer" class="timer"></div>
+      <div class="typing-area" id="typingText">Secure Express ensures safe and reliable travel. All drivers are trained, all vehicles tracked, and every ride monitored live.</div>
+      <textarea id="typingInput" placeholder="Start typing..."></textarea>
+      <button onclick="endTyping()">Finish Typing</button>
+    </div>
+
+    <div id="result" class="hidden">
+      <h2>Test Results</h2>
+      <div id="scoreDisplay"></div>
+      <button onclick="downloadResults()">Download Results</button>
+    </div>
+  </div>
+
+  <script>
+    const excelQs = [
+      { q: "What is Google Chrome used for?", options: ["Writing documents", "Sending emails", "Browsing the internet", "Creating spreadsheets"], a: 2 },
+      { q: "What is Microsoft Outlook mainly used for?", options: ["Drawing pictures", "Editing videos", "Sending and receiving emails", "Writing reports"], a: 2 },
+      { q: "What does Microsoft Excel help you do?", options: ["Watch movies", "Browse the internet", "Create and calculate spreadsheets", "Write letters"], a: 2 },
+      { q: "Which program is best for writing formal letters or reports?", options: ["PowerPoint", "Excel", "WordPad", "Microsoft Word"], a: 3 },
+      { q: "What is Microsoft PowerPoint used for?", options: ["Editing photos", "Making presentations", "Managing files", "Sending messages"], a: 1 },
+      { q: "What does “right-clicking” with the mouse usually do?", options: ["Selects text", "Opens a shortcut or context menu", "Opens a file", "Zooms in"], a: 1 },
+      { q: "What does Ctrl + C do?", options: ["Cuts the text", "Copies the text", "Pastes the text", "Closes the program"], a: 1 },
+      { q: "What does Ctrl + V do?", options: ["Views the document", "Pastes the copied or cut item", "Verifies spelling", "Opens a video"], a: 1 },
+      { q: "What does Ctrl + X do?", options: ["Cuts the selected item", "Exits the window", "Extends the screen", "Copies the text"], a: 0 },
+      { q: "What happens when you close a window without saving your document?", options: ["It saves automatically", "It sends an email", "You might lose your changes", "It prints the document"], a: 2 }
+    ];
+
+    const itQs = [
+      { q: "Client complains driver is 10 min late. Car is 500m away. Best response?", options: ["Contact driver and call back", "Please wait", "I'll update driver and confirm shortly", "Escalate now"], a: 2 },
+      { q: "Driver breaks down mid-trip with VIP. Immediate action?", options: ["Notify client", "Contact tech", "Confirm safety + dispatch + notify", "Wait for report"], a: 2 },
+      { q: "Client can’t use app. Urgent ride. Response?", options: ["Ask to reinstall", "Log issue", "Dispatch manually, then report", "Send instructions"], a: 2 },
+      { q: "Client calls in distress. First action?", options: ["Log call", "Check location, dispatch help", "Call driver", "Escalate to director"], a: 1 },
+      { q: "System outage affects dispatch. Response?", options: ["Reboot PC", "Notify ops + use manual backup", "Wait", "Log IT ticket"], a: 1 },
+      { q: "Late driver ETA is 6 mins. Client upset. Response?", options: ["It’s close", "It’s traffic", "Call driver, confirm ETA, update client", "Reschedule trip"], a: 2 },
+      { q: "Client emails complaint. What’s your first action?", options: ["Forward to manager", "Call client", "Acknowledge, log, escalate", "Ignore"], a: 2 },
+      { q: "Typing system lags. What’s first step?", options: ["Restart PC", "Clear cache/reload", "Call IT", "Wait"], a: 1 },
+      { q: "Client refuses OTP. Best action?", options: ["Explain policy and why it’s needed", "Skip", "Tell driver to collect", "Cancel trip"], a: 0 },
+      { q: "Incorrect client data appears. You?", options: ["Ignore", "Update", "Verify, correct, log", "Notify dev team"], a: 2 }
+    ];
+
+    let activeTimer = null;
+    let scores = { excel: 0, it: 0, typing: 0 };
+    let user = "";
+
+    function startTest() {
+      user = document.getElementById("username").value.trim();
+      if (!user) return alert("Enter your name first.");
+      alert("Test sequence will now begin.");
+      document.getElementById("intro").classList.add("hidden");
+      generateQuestions(excelQs, "excelQuestions", "excel");
+      showSection("excel");
+      startTimer("excelTimer", 120, submitExcel);
+    }
+
+    function showSection(id) {
+      ["intro", "excel", "it", "typing", "result"].forEach(s => document.getElementById(s).classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    function generateQuestions(qset, containerId, prefix) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      qset.forEach((q, i) => {
+        let html = `<p><strong>${i + 1}. ${q.q}</strong></p>`;
+        q.options.forEach((opt, j) => {
+          html += `<label><input type="radio" name="${prefix}_q${i}" value="${j}"> ${opt}</label><br>`;
+        });
+        container.innerHTML += html;
+      });
+    }
+
+    function startTimer(id, seconds, callback) {
+      const el = document.getElementById(id);
+      clearInterval(activeTimer);
+      let t = seconds;
+      el.textContent = `Time left: ${t}s`;
+      activeTimer = setInterval(() => {
+        t--;
+        el.textContent = `Time left: ${t}s`;
+        if (t <= 0) {
+          clearInterval(activeTimer);
+          callback();
+        }
+      }, 1000);
+    }
+
+    function submitExcel() {
+      scores.excel = gradeQuiz("excel_q", excelQs);
+      generateQuestions(itQs, "itQuestions", "it");
+      showSection("it");
+      startTimer("itTimer", 300, submitIT);
+    }
+
+    function submitIT() {
+      scores.it = gradeQuiz("it_q", itQs);
+      showSection("typing");
+      startTimer("typingTimer", 120, endTyping);
+    }
+
+    function endTyping() {
+      clearInterval(activeTimer);
+      const original = document.getElementById("typingText").innerText.trim();
+      const typed = document.getElementById("typingInput").value.trim();
+      const wpm = Math.round(typed.split(/\s+/).length / 2);
+      scores.typing = wpm;
+      showResults();
+    }
+
+    function gradeQuiz(namePrefix, qset) {
+      let score = 0;
+      qset.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="${namePrefix}${i}"]:checked`);
+        if (selected && parseInt(selected.value) === q.a) score++;
+      });
+      return score;
+    }
+
+    function showResults() {
+      showSection("result");
+      const div = document.getElementById("scoreDisplay");
+      div.innerHTML = `
+        <p><strong>Name:</strong> ${user}</p>
+        <p><strong>Basic Computer Score:</strong> ${scores.excel} / 10</p>
+        <p><strong>IT & CSS Score:</strong> ${scores.it} / 10</p>
+        <p><strong>Typing Speed:</strong> ${scores.typing} WPM</p>
+      `;
+    }
+
+    function downloadResults() {
+      const blob = new Blob([`Name: ${user}\nBasic Computer: ${scores.excel}/10\nIT & CSS: ${scores.it}/10\nTyping: ${scores.typing} WPM`], {type: "text/plain"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${user.replace(/\s+/g, "_")}_SecureExpress_Test.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  </script>
+</body>
+</html>
