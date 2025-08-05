@@ -3,202 +3,174 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Secure Express Candidate Test</title>
+  <title>Secure Express - Candidate Test</title>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background: #f7f7f7;
       padding: 20px;
-      background: #f5f5f5;
+      line-height: 1.6;
     }
-    .question {
-      margin-bottom: 20px;
+    .section {
+      margin-bottom: 30px;
     }
     .timer {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
       color: red;
     }
     textarea {
       width: 100%;
       height: 150px;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 15px;
       font-size: 16px;
+    }
+    input[type="text"], input[type="email"] {
+      width: 300px;
+      padding: 6px;
+      margin-bottom: 10px;
+    }
+    .disabled {
+      opacity: 0.6;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
 
-  <h2>Secure Express Candidate Test</h2>
-  <p class="timer" id="timer">Time Remaining: 30:00</p>
-
-  <!-- MULTIPLE CHOICE QUESTIONS -->
-  <div id="questions">
-    <div class="question">
-      <p>1. What is Chrome used for?</p>
-      <input type="radio" name="q1" value="Text"> Text<br>
-      <input type="radio" name="q1" value="Email"> Email<br>
-      <input type="radio" name="q1" value="Internet"> Internet<br>
-      <input type="radio" name="q1" value="Sheet"> Sheet<br>
-    </div>
-
-    <div class="question">
-      <p>2. What does Ctrl+C do?</p>
-      <input type="radio" name="q2" value="Paste"> Paste<br>
-      <input type="radio" name="q2" value="Cut"> Cut<br>
-      <input type="radio" name="q2" value="Copy"> Copy<br>
-      <input type="radio" name="q2" value="Delete"> Delete<br>
-    </div>
-
-    <div class="question">
-      <p>3. What happens when you right-click on a file?</p>
-      <input type="radio" name="q3" value="Open file"> Open file<br>
-      <input type="radio" name="q3" value="Delete file"> Delete file<br>
-      <input type="radio" name="q3" value="Show options"> Show options<br>
-      <input type="radio" name="q3" value="Run file"> Run file<br>
-    </div>
-
-    <div class="question">
-      <p>4. What application is used for creating spreadsheets?</p>
-      <input type="radio" name="q4" value="Word"> Word<br>
-      <input type="radio" name="q4" value="PowerPoint"> PowerPoint<br>
-      <input type="radio" name="q4" value="Excel"> Excel<br>
-      <input type="radio" name="q4" value="Outlook"> Outlook<br>
-    </div>
-
-    <div class="question">
-      <p>5. What is Outlook used for?</p>
-      <input type="radio" name="q5" value="Documents"> Documents<br>
-      <input type="radio" name="q5" value="Presentations"> Presentations<br>
-      <input type="radio" name="q5" value="Email"> Email<br>
-      <input type="radio" name="q5" value="Graphics"> Graphics<br>
-    </div>
-
-    <div class="question">
-      <p>6. A client calls in complaining their driver is 10 minutes late. You see the vehicle is stationary 500m from the pickup location. What is the BEST first response?</p>
-      <input type="radio" name="q6" value="A"> A) “I will contact the driver and call you back.”<br>
-      <input type="radio" name="q6" value="B"> B) “The vehicle is nearby; please wait, it should arrive shortly.”<br>
-      <input type="radio" name="q6" value="C"> C) “I can see the vehicle is close. I’ll update the driver now and confirm with you shortly.”<br>
-      <input type="radio" name="q6" value="D"> D) “I will escalate this to operations immediately.”<br>
-    </div>
-
-    <div class="question">
-      <p>7. A driver refuses to wear uniform. What is your next best action?</p>
-      <input type="radio" name="q7" value="A"> A) Ignore and allow for this trip<br>
-      <input type="radio" name="q7" value="B"> B) Remove driver and assign replacement<br>
-      <input type="radio" name="q7" value="C"> C) Ask driver to wear reflective vest only<br>
-      <input type="radio" name="q7" value="D"> D) Call client and ask them to approve exception<br>
-    </div>
-
-    <div class="question">
-      <p>8. You are dealing with multiple calls, dispatches and reporting at the same time. What is your BEST action?</p>
-      <input type="radio" name="q8" value="A"> A) Prioritise client communication and handle others later<br>
-      <input type="radio" name="q8" value="B"> B) Put everyone on hold<br>
-      <input type="radio" name="q8" value="C"> C) Delegate if possible, focus on most urgent matters<br>
-      <input type="radio" name="q8" value="D"> D) Stop reporting until calls are done<br>
-    </div>
-
-    <div class="question">
-      <p>9. Which Microsoft app is used to prepare presentations?</p>
-      <input type="radio" name="q9" value="Word"> Word<br>
-      <input type="radio" name="q9" value="Outlook"> Outlook<br>
-      <input type="radio" name="q9" value="PowerPoint"> PowerPoint<br>
-      <input type="radio" name="q9" value="Excel"> Excel<br>
-    </div>
-
-    <div class="question">
-      <p>10. A client calls and cannot request a driver on the app. What is your BEST action?</p>
-      <input type="radio" name="q10" value="A"> A) Ask them to close and reopen the app<br>
-      <input type="radio" name="q10" value="B"> B) Assign driver manually and log issue<br>
-      <input type="radio" name="q10" value="C"> C) Refer them to the FAQ page<br>
-      <input type="radio" name="q10" value="D"> D) Ask them to reinstall the app<br>
-    </div>
+  <h1>Secure Express - Candidate Test</h1>
+  <div class="section">
+    <label>Full Name:</label><br>
+    <input type="text" id="name" /><br>
+    <label>Email:</label><br>
+    <input type="email" id="email" />
   </div>
 
-  <!-- TYPING TEST -->
-  <div>
-    <h3>Typing Test</h3>
-    <p>Please write at least 100 words. Spelling, grammar, and clarity are important.</p>
-    <textarea id="typingTest" placeholder="Start typing here..."></textarea>
+  <div class="section">
+    <span class="timer" id="timer">Time Left: 30:00</span>
   </div>
 
-  <button onclick="submitTest()">Submit Test</button>
+  <div class="section">
+    <h2>🧠 Multiple Choice Questions</h2>
+    <div>
+      <p>1. A client calls in complaining their driver is 10 minutes late. You see the vehicle is stationary 500m from the pickup location. What is the BEST first response?</p>
+      <label><input type="radio" name="q1" value="A"> A) “I will contact the driver and call you back.”</label><br>
+      <label><input type="radio" name="q1" value="B"> B) “The vehicle is nearby; please wait, it should arrive shortly.”</label><br>
+      <label><input type="radio" name="q1" value="C"> C) “I can see the vehicle is close. I’ll update the driver now and confirm with you shortly.”</label><br>
+      <label><input type="radio" name="q1" value="D"> D) “I will escalate this to operations immediately.”</label>
+    </div>
+    <!-- Add more questions similarly -->
+  </div>
+
+  <div class="section">
+    <h2>⌨️ Typing Test (2 minutes)</h2>
+    <p id="typingInstructions">Type the following 100-word paragraph below:</p>
+    <p id="typingText" style="background:#fff;padding:10px;border:1px solid #ccc;">
+      Reliable transport services require attention to detail, strong communication, and rapid response during client engagements. Our drivers follow strict protocols, including vehicle checks, uniform compliance, and secure onboarding of passengers. Whether the ride involves a VIP client or an airport transfer, each trip is monitored in real-time with tracking systems and control room oversight. As a fleet controller, your role is to maintain this gold standard at all times, escalate delays swiftly, and document every deviation from standard operating procedures. Professionalism, speed, and accuracy are non-negotiable. Your performance directly affects the safety, trust, and satisfaction of our clients.
+    </p>
+    <textarea id="typingInput" placeholder="Start typing here..." disabled></textarea><br>
+    <button onclick="submitTyping()" id="submitTypingBtn" disabled>Submit Typing Test</button>
+    <div id="typingResults"></div>
+  </div>
+
+  <div class="section">
+    <button onclick="submitAll()">Submit Full Test</button>
+  </div>
 
   <script>
-    let timerDuration = 1800; // 30 minutes
-    let timerInterval;
-    let warningGiven = false;
+    let totalTime = 1800; // 30 minutes
+    let typingDuration = 120; // 2 minutes
+    let typingStarted = false;
+    let typingStartTime;
+    let typingTimer;
+    const typingText = document.getElementById("typingText").innerText.trim();
 
-    function startTimer(duration) {
-      let timeLeft = duration;
-      timerInterval = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        document.getElementById('timer').textContent = `Time Remaining: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+    window.onload = function() {
+      startUnifiedTimer();
+    };
 
-        if (timeLeft === 10 && !warningGiven) {
-          alert("⚠️ 10 seconds left. Finalise your answers now.");
-          warningGiven = true;
-        }
+    function startUnifiedTimer() {
+      const timerDisplay = document.getElementById("timer");
+      let countdown = setInterval(() => {
+        const minutes = Math.floor(totalTime / 60);
+        const seconds = totalTime % 60;
+        timerDisplay.textContent = `Time Left: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
 
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          alert("⏰ Time is up! Submitting your answers.");
+        if (totalTime === 10) alert("⏰ 10 seconds remaining!");
+        if (totalTime === 0) {
+          clearInterval(countdown);
           disableInputs();
-          submitTest(true);
+          submitAll();
+          alert("Time is up. Your test has been submitted automatically.");
         }
-
-        timeLeft--;
+        totalTime--;
       }, 1000);
     }
 
+    function enableTyping() {
+      if (document.getElementById("typingInput").disabled) {
+        const timeLeft = totalTime;
+        if (timeLeft < 120) alert("⚠️ You have less than 2 minutes left. Use your time wisely.");
+        document.getElementById("typingInput").disabled = false;
+        document.getElementById("submitTypingBtn").disabled = false;
+        typingStarted = true;
+        typingStartTime = Date.now();
+        typingTimer = setTimeout(() => {
+          submitTyping();
+        }, typingDuration * 1000);
+      }
+    }
+
+    function submitTyping() {
+      clearTimeout(typingTimer);
+      const typedText = document.getElementById("typingInput").value.trim();
+      const originalWords = typingText.split(/\s+/);
+      const typedWords = typedText.split(/\s+/);
+      const wordsTyped = typedWords.length;
+      let correct = 0;
+
+      for (let i = 0; i < typedWords.length; i++) {
+        if (typedWords[i] === originalWords[i]) correct++;
+      }
+
+      const timeSpent = (Date.now() - typingStartTime) / 1000 / 60;
+      const wpm = Math.round(wordsTyped / timeSpent);
+      const accuracy = Math.round((correct / originalWords.length) * 100);
+
+      document.getElementById("typingResults").innerHTML =
+        `<strong>Typing Results:</strong><br>
+        WPM: ${wpm}<br>
+        Accuracy: ${accuracy}%<br>
+        Words Typed: ${wordsTyped}<br>
+        Completed in: ${timeSpent.toFixed(2)} minutes`;
+
+      document.getElementById("typingInput").disabled = true;
+      document.getElementById("submitTypingBtn").disabled = true;
+    }
+
     function disableInputs() {
-      document.querySelectorAll("input, textarea, button").forEach(el => {
-        el.disabled = true;
-      });
+      const inputs = document.querySelectorAll("input, textarea, button");
+      inputs.forEach(el => el.disabled = true);
     }
 
-    function submitTest(auto = false) {
-      const totalQuestions = 10;
-      let incomplete = false;
-      let output = "";
+    function submitAll() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      let answers = `Name: ${name}\nEmail: ${email}\n\n`;
 
-      for (let i = 1; i <= totalQuestions; i++) {
-        const name = `q${i}`;
-        const selected = document.querySelector(`input[name="${name}"]:checked`);
-        if (!selected) {
-          incomplete = true;
-          output += `Q${i}: Not answered\n`;
-        } else {
-          output += `Q${i}: ${selected.value}\n`;
-        }
+      for (let i = 1; i <= 1; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        answers += `Q${i}: ${selected ? selected.value : 'Not answered'}\n`;
       }
 
-      const typing = document.getElementById("typingTest").value.trim();
-      const wordCount = typing.split(/\s+/).filter(w => w).length;
+      const results = document.getElementById("typingResults").innerText;
+      answers += `\nTyping Test:\n${results}`;
 
-      if (wordCount < 100) {
-        incomplete = true;
-        output += `Typing Test: Less than 100 words (${wordCount})\n`;
-      } else {
-        output += `Typing Test:\n${typing}\n`;
-      }
-
-      output += `\nTest Status: ${incomplete ? "INCOMPLETE" : "COMPLETE"}`;
-
-      const blob = new Blob([output], { type: 'text/plain' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'SecureExpress_Test_Results.txt';
-      link.click();
+      console.log(answers);
+      alert("✅ Test submitted.\nCheck developer console (F12 > Console) to view the results.");
     }
 
-    window.onload = function() {
-      startTimer(timerDuration);
-    };
+    // Enable typing area on focus
+    document.getElementById("typingInput").addEventListener("focus", enableTyping);
   </script>
-
 </body>
 </html>
