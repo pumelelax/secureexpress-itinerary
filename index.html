@@ -3,167 +3,201 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Secure Express Computer Test</title>
+  <title>Secure Express Candidate Test</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
-    .section { display: none; margin-top: 20px; }
-    .question { margin-bottom: 15px; }
-    button { padding: 10px 20px; font-size: 16px; }
-    #results { white-space: pre-wrap; background: #fff; padding: 20px; border-radius: 5px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .timer {
+      font-size: 18px;
+      font-weight: bold;
+      color: red;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Secure Express Computer Literacy Test</h1>
+  <h2>Secure Express Candidate Test</h2>
+  <p class="timer" id="timer">Time Remaining: 30:00</p>
 
-  <div id="section1" class="section" style="display:block;">
-    <label>Full Name:</label>
-    <input type="text" id="username" />
-    <br/><br/>
-    <button onclick="startTest()">Start Test</button>
-  </div>
-
-  <div id="section2" class="section">
-    <h2>Section 1: Computer Literacy (Multiple Choice)</h2>
-
+  <!-- MULTIPLE CHOICE QUESTIONS -->
+  <div id="questions">
     <div class="question">
-      <p>1. What is Google Chrome used for?</p>
-      <label><input type="radio" name="q1" value="Internet"> Internet</label><br>
-      <label><input type="radio" name="q1" value="Text"> Text</label><br>
-      <label><input type="radio" name="q1" value="Email"> Email</label><br>
-      <label><input type="radio" name="q1" value="Sheet"> Sheet</label>
+      <p>1. What is Chrome used for?</p>
+      <input type="radio" name="q1" value="Text"> Text<br>
+      <input type="radio" name="q1" value="Email"> Email<br>
+      <input type="radio" name="q1" value="Internet"> Internet<br>
+      <input type="radio" name="q1" value="Sheet"> Sheet<br>
     </div>
 
     <div class="question">
-      <p>2. What does Ctrl + C do?</p>
-      <label><input type="radio" name="q2" value="Copy"> Copy</label><br>
-      <label><input type="radio" name="q2" value="Cut"> Cut</label><br>
-      <label><input type="radio" name="q2" value="Paste"> Paste</label><br>
-      <label><input type="radio" name="q2" value="Close"> Close</label>
+      <p>2. What does Ctrl+C do?</p>
+      <input type="radio" name="q2" value="Paste"> Paste<br>
+      <input type="radio" name="q2" value="Cut"> Cut<br>
+      <input type="radio" name="q2" value="Copy"> Copy<br>
+      <input type="radio" name="q2" value="Delete"> Delete<br>
     </div>
 
     <div class="question">
-      <p>3. Which software is used to write letters and reports?</p>
-      <label><input type="radio" name="q3" value="Word"> Microsoft Word</label><br>
-      <label><input type="radio" name="q3" value="Excel"> Microsoft Excel</label><br>
-      <label><input type="radio" name="q3" value="Outlook"> Microsoft Outlook</label><br>
-      <label><input type="radio" name="q3" value="PowerPoint"> Microsoft PowerPoint</label>
+      <p>3. What happens when you right-click on a file?</p>
+      <input type="radio" name="q3" value="Open file"> Open file<br>
+      <input type="radio" name="q3" value="Delete file"> Delete file<br>
+      <input type="radio" name="q3" value="Show options"> Show options<br>
+      <input type="radio" name="q3" value="Run file"> Run file<br>
     </div>
 
-    <br>
-    <button onclick="nextSection()">Next</button>
+    <div class="question">
+      <p>4. What application is used for creating spreadsheets?</p>
+      <input type="radio" name="q4" value="Word"> Word<br>
+      <input type="radio" name="q4" value="PowerPoint"> PowerPoint<br>
+      <input type="radio" name="q4" value="Excel"> Excel<br>
+      <input type="radio" name="q4" value="Outlook"> Outlook<br>
+    </div>
+
+    <div class="question">
+      <p>5. What is Outlook used for?</p>
+      <input type="radio" name="q5" value="Documents"> Documents<br>
+      <input type="radio" name="q5" value="Presentations"> Presentations<br>
+      <input type="radio" name="q5" value="Email"> Email<br>
+      <input type="radio" name="q5" value="Graphics"> Graphics<br>
+    </div>
+
+    <div class="question">
+      <p>6. A client calls in complaining their driver is 10 minutes late. You see the vehicle is stationary 500m from the pickup location. What is the BEST first response?</p>
+      <input type="radio" name="q6" value="A"> A) “I will contact the driver and call you back.”<br>
+      <input type="radio" name="q6" value="B"> B) “The vehicle is nearby; please wait, it should arrive shortly.”<br>
+      <input type="radio" name="q6" value="C"> C) “I can see the vehicle is close. I’ll update the driver now and confirm with you shortly.”<br>
+      <input type="radio" name="q6" value="D"> D) “I will escalate this to operations immediately.”<br>
+    </div>
+
+    <div class="question">
+      <p>7. A driver refuses to wear uniform. What is your next best action?</p>
+      <input type="radio" name="q7" value="A"> A) Ignore and allow for this trip<br>
+      <input type="radio" name="q7" value="B"> B) Remove driver and assign replacement<br>
+      <input type="radio" name="q7" value="C"> C) Ask driver to wear reflective vest only<br>
+      <input type="radio" name="q7" value="D"> D) Call client and ask them to approve exception<br>
+    </div>
+
+    <div class="question">
+      <p>8. You are dealing with multiple calls, dispatches and reporting at the same time. What is your BEST action?</p>
+      <input type="radio" name="q8" value="A"> A) Prioritise client communication and handle others later<br>
+      <input type="radio" name="q8" value="B"> B) Put everyone on hold<br>
+      <input type="radio" name="q8" value="C"> C) Delegate if possible, focus on most urgent matters<br>
+      <input type="radio" name="q8" value="D"> D) Stop reporting until calls are done<br>
+    </div>
+
+    <div class="question">
+      <p>9. Which Microsoft app is used to prepare presentations?</p>
+      <input type="radio" name="q9" value="Word"> Word<br>
+      <input type="radio" name="q9" value="Outlook"> Outlook<br>
+      <input type="radio" name="q9" value="PowerPoint"> PowerPoint<br>
+      <input type="radio" name="q9" value="Excel"> Excel<br>
+    </div>
+
+    <div class="question">
+      <p>10. A client calls and cannot request a driver on the app. What is your BEST action?</p>
+      <input type="radio" name="q10" value="A"> A) Ask them to close and reopen the app<br>
+      <input type="radio" name="q10" value="B"> B) Assign driver manually and log issue<br>
+      <input type="radio" name="q10" value="C"> C) Refer them to the FAQ page<br>
+      <input type="radio" name="q10" value="D"> D) Ask them to reinstall the app<br>
+    </div>
   </div>
 
-  <div id="section3" class="section">
-    <h2>Section 2: Typing Test</h2>
-    <p>Type the following text within 1 minute:</p>
-    <blockquote id="typingText">Please type this exact sentence to measure your typing speed and accuracy.</blockquote>
-    <textarea id="typedText" rows="5" cols="60" placeholder="Start typing here..."></textarea>
-    <br><br>
-    <button onclick="submitTest()">Submit Test</button>
+  <!-- TYPING TEST -->
+  <div>
+    <h3>Typing Test</h3>
+    <p>Please write at least 100 words. Spelling, grammar, and clarity are important.</p>
+    <textarea id="typingTest" placeholder="Start typing here..."></textarea>
   </div>
 
-  <div id="section4" class="section">
-    <h2>Results</h2>
-    <div id="results"></div>
-    <br>
-    <button onclick="downloadResults()">Download Results</button>
-  </div>
+  <button onclick="submitTest()">Submit Test</button>
 
   <script>
-    let timer;
-    let timeLeft = 60;
-    let user = "";
+    let timerDuration = 1800; // 30 minutes
+    let timerInterval;
+    let warningGiven = false;
 
-    function startTest() {
-      user = document.getElementById("username").value.trim();
-      if (user === "" || /[^a-zA-Z\s]/.test(user)) {
-        alert("Please enter a valid name without special characters.");
-        return;
-      }
+    function startTimer(duration) {
+      let timeLeft = duration;
+      timerInterval = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').textContent = `Time Remaining: ${minutes}:${seconds.toString().padStart(2, '0')}`;
 
-      if (localStorage.getItem("testStarted")) {
-        alert("Test already started. Refreshing or restarting is not allowed.");
-        return;
-      }
-
-      localStorage.setItem("testStarted", "true");
-      showSection("section2");
-      document.getElementById("section2").scrollIntoView({ behavior: "smooth" });
-    }
-
-    function nextSection() {
-      const totalQuestions = 3;
-      for (let i = 1; i <= totalQuestions; i++) {
-        if (!document.querySelector(`input[name="q${i}"]:checked`)) {
-          alert("Please answer all questions before continuing.");
-          return;
+        if (timeLeft === 10 && !warningGiven) {
+          alert("⚠️ 10 seconds left. Finalise your answers now.");
+          warningGiven = true;
         }
-      }
 
-      showSection("section3");
-      document.getElementById("section3").scrollIntoView({ behavior: "smooth" });
-
-      timer = setInterval(() => {
-        timeLeft--;
         if (timeLeft <= 0) {
-          clearInterval(timer);
-          submitTest();
+          clearInterval(timerInterval);
+          alert("⏰ Time is up! Submitting your answers.");
+          disableInputs();
+          submitTest(true);
         }
+
+        timeLeft--;
       }, 1000);
     }
 
-    function submitTest() {
-      clearInterval(timer);
-
-      const answers = {
-        q1: "Internet",
-        q2: "Copy",
-        q3: "Word"
-      };
-
-      let score = 0;
-      Object.keys(answers).forEach(q => {
-        const selected = document.querySelector(`input[name="${q}"]:checked`);
-        if (selected && selected.value === answers[q]) score++;
+    function disableInputs() {
+      document.querySelectorAll("input, textarea, button").forEach(el => {
+        el.disabled = true;
       });
+    }
 
-      const typed = document.getElementById("typedText").value.trim();
-      const original = document.getElementById("typingText").innerText.trim();
+    function submitTest(auto = false) {
+      const totalQuestions = 10;
+      let incomplete = false;
+      let output = "";
 
-      const typedWords = typed.split(/\s+/);
-      const originalWords = original.split(/\s+/);
-      const totalTyped = typedWords.length;
-
-      let correct = 0;
-      for (let i = 0; i < originalWords.length; i++) {
-        if (typedWords[i] === originalWords[i]) correct++;
+      for (let i = 1; i <= totalQuestions; i++) {
+        const name = `q${i}`;
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        if (!selected) {
+          incomplete = true;
+          output += `Q${i}: Not answered\n`;
+        } else {
+          output += `Q${i}: ${selected.value}\n`;
+        }
       }
 
-      const accuracy = Math.round((correct / originalWords.length) * 100);
-      const wpm = Math.round((totalTyped / (60 - timeLeft)) * 60);
+      const typing = document.getElementById("typingTest").value.trim();
+      const wordCount = typing.split(/\s+/).filter(w => w).length;
 
-      showSection("section4");
-      document.getElementById("results").innerText =
-        `Candidate: ${user}\n\nScore: ${score}/3\n\nTyping Speed: ${wpm} WPM\nTyping Accuracy: ${accuracy}%`;
+      if (wordCount < 100) {
+        incomplete = true;
+        output += `Typing Test: Less than 100 words (${wordCount})\n`;
+      } else {
+        output += `Typing Test:\n${typing}\n`;
+      }
 
-      localStorage.removeItem("testStarted");
-    }
+      output += `\nTest Status: ${incomplete ? "INCOMPLETE" : "COMPLETE"}`;
 
-    function downloadResults() {
-      const content = document.getElementById("results").innerText;
-      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-      const link = document.createElement("a");
+      const blob = new Blob([output], { type: 'text/plain' });
+      const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `TestResults_${user.replace(/\s+/g, '_')}.txt`;
+      link.download = 'SecureExpress_Test_Results.txt';
       link.click();
-      alert("Results downloaded successfully.");
     }
 
-    function showSection(id) {
-      document.querySelectorAll(".section").forEach(s => s.style.display = "none");
-      document.getElementById(id).style.display = "block";
-    }
+    window.onload = function() {
+      startTimer(timerDuration);
+    };
   </script>
 
 </body>
