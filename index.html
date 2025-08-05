@@ -22,9 +22,7 @@
     h1, h2 {
       color: #d32f2f;
     }
-    .hidden {
-      display: none;
-    }
+    .hidden { display: none; }
     .typing-area {
       border: 1px solid #ccc;
       padding: 15px;
@@ -32,17 +30,6 @@
       background: #fefefe;
       line-height: 1.6;
       margin-bottom: 10px;
-    }
-    .word {
-      padding: 2px 4px;
-      margin: 1px;
-      display: inline-block;
-    }
-    .correct {
-      background-color: #c8e6c9;
-    }
-    .incorrect {
-      background-color: #ffcdd2;
     }
     textarea {
       width: 100%;
@@ -60,9 +47,7 @@
       font-size: 16px;
       border-radius: 4px;
     }
-    button:hover {
-      background: #b71c1c;
-    }
+    button:hover { background: #b71c1c; }
     @media screen and (max-width: 600px) {
       .container { padding: 15px; }
       textarea { font-size: 14px; }
@@ -77,10 +62,7 @@
       max-width: 180px;
       margin-bottom: 20px;
     }
-    label {
-      display: block;
-      margin-bottom: 8px;
-    }
+    label { display: block; margin-bottom: 8px; }
     .timer {
       font-weight: bold;
       margin-bottom: 15px;
@@ -96,167 +78,5 @@
       <input type="text" id="username" placeholder="Your Name" />
       <h3>Test Outline:</h3>
       <ul>
-        <li>Excel Questions: <strong>2 Minutes</strong></li>
-        <li>IT/Customer Service Questions: <strong>5 Minutes</strong></li>
-        <li>Typing Speed Test: <strong>2 Minutes</strong></li>
-      </ul>
-      <button onclick="startTest()">Start Test</button>
-    </div>
-
-    <div id="excel" class="hidden">
-      <h2>Excel Questions (2 min)</h2>
-      <div id="excelTimer" class="timer"></div>
-      <div id="excelQuestions"></div>
-      <button onclick="submitExcel()">Next: IT & CSS</button>
-    </div>
-
-    <div id="it" class="hidden">
-      <h2>IT / Customer Service Questions (5 min)</h2>
-      <div id="itTimer" class="timer"></div>
-      <div id="itQuestions"></div>
-      <button onclick="submitIT()">Next: Typing Test</button>
-    </div>
-
-    <div id="typing" class="hidden">
-      <h2>Typing Speed Test (2 min)</h2>
-      <div id="typingTimer" class="timer"></div>
-      <div class="typing-area" id="typingText">Secure Express ensures safe and reliable travel. All drivers are trained, all vehicles tracked, and every ride monitored live.</div>
-      <textarea id="typingInput" placeholder="Start typing..."></textarea>
-      <button onclick="endTyping()">Finish Typing</button>
-    </div>
-
-    <div id="result" class="hidden">
-      <h2>Test Results</h2>
-      <div id="scoreDisplay"></div>
-      <button onclick="downloadResults()">Download Results</button>
-    </div>
-  </div>
-
-  <script>
-    const excelQs = [
-      { q: "Which formula adds values in cells A1 to A5?", options: ["=SUM(A1:A5)", "=TOTAL(A1:A5)", "=ADD(A1:A5)", "=A1+A5"], a: 0 },
-      { q: "Which symbol begins a formula?", options: ["=", "+", "*", "#"], a: 0 },
-      { q: "What does the Fill Handle do?", options: ["Fills color", "Copies formulas", "Formats cells", "Deletes content"], a: 1 },
-      { q: "Shortcut for inserting a new row?", options: ["Ctrl+N", "Ctrl+Shift+Plus", "Ctrl+R", "Alt+Enter"], a: 1 },
-      { q: "What is a cell reference?", options: ["Formula", "A1", "Sheet", "Range"], a: 1 },
-      { q: "Function to get average?", options: ["=AVG", "=AVERAGE", "=MEAN", "=MID"], a: 1 },
-      { q: "Which chart is best for trends?", options: ["Bar", "Pie", "Line", "Scatter"], a: 2 },
-      { q: "Freeze Panes keeps what fixed?", options: ["Fonts", "Rows/Cols", "Formulas", "Headers"], a: 1 },
-      { q: "Shortcut to save?", options: ["Ctrl+P", "Ctrl+S", "Ctrl+Z", "Ctrl+Shift+S"], a: 1 },
-      { q: "How to start a new line in a cell?", options: ["Enter", "Alt+Enter", "Shift+Enter", "Ctrl+Enter"], a: 1 }
-    ];
-
-    const itQs = [
-      { q: "Client complains driver is 10 min late. Car is 500m away. Best response?", options: ["Contact driver and call back", "Please wait", "I'll update driver and confirm shortly", "Escalate now"], a: 2 },
-      { q: "Driver breaks down mid-trip with VIP. Immediate action?", options: ["Notify client", "Contact tech", "Confirm safety + dispatch + notify", "Wait for report"], a: 2 },
-      { q: "Client can’t use app. Urgent ride. Response?", options: ["Ask to reinstall", "Log issue", "Dispatch manually, then report", "Send instructions"], a: 2 },
-      { q: "Client calls in distress. First action?", options: ["Log call", "Check location, dispatch help", "Call driver", "Escalate to director"], a: 1 },
-      { q: "System outage affects dispatch. Response?", options: ["Reboot PC", "Notify ops + use manual backup", "Wait", "Log IT ticket"], a: 1 },
-      { q: "Late driver ETA is 6 mins. Client upset. Response?", options: ["It’s close", "It’s traffic", "Call driver, confirm ETA, update client", "Reschedule trip"], a: 2 },
-      { q: "Client emails complaint. What’s your first action?", options: ["Forward to manager", "Call client", "Acknowledge, log, escalate", "Ignore"], a: 2 },
-      { q: "Typing system lags. What’s first step?", options: ["Restart PC", "Clear cache/reload", "Call IT", "Wait"], a: 1 },
-      { q: "Client refuses OTP. Best action?", options: ["Explain policy and why it’s needed", "Skip", "Tell driver to collect", "Cancel trip"], a: 0 },
-      { q: "Incorrect client data appears. You?", options: ["Ignore", "Update", "Verify, correct, log", "Notify dev team"], a: 2 }
-    ];
-
-    let activeTimer = null;
-    let scores = { excel: 0, it: 0, typing: 0 };
-    let user = "";
-
-    function startTest() {
-      user = document.getElementById("username").value.trim();
-      if (!user) return alert("Enter your name first.");
-      alert("Test sequence will now begin.");
-      document.getElementById("intro").classList.add("hidden");
-      generateQuestions(excelQs, "excelQuestions", "excel");
-      showSection("excel");
-      startTimer("excelTimer", 120, submitExcel);
-    }
-
-    function showSection(id) {
-      ["intro", "excel", "it", "typing", "result"].forEach(s => document.getElementById(s).classList.add("hidden"));
-      document.getElementById(id).classList.remove("hidden");
-    }
-
-    function generateQuestions(qset, containerId, prefix) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = "";
-      qset.forEach((q, i) => {
-        let html = `<p><strong>${i + 1}. ${q.q}</strong></p>`;
-        q.options.forEach((opt, j) => {
-          html += `<label><input type="radio" name="${prefix}_q${i}" value="${j}"> ${opt}</label><br>`;
-        });
-        container.innerHTML += html;
-      });
-    }
-
-    function startTimer(id, seconds, callback) {
-      const el = document.getElementById(id);
-      clearInterval(activeTimer);
-      let t = seconds;
-      el.textContent = `Time left: ${t}s`;
-      activeTimer = setInterval(() => {
-        t--;
-        el.textContent = `Time left: ${t}s`;
-        if (t <= 0) {
-          clearInterval(activeTimer);
-          callback();
-        }
-      }, 1000);
-    }
-
-    function submitExcel() {
-      scores.excel = gradeQuiz("excel_q", excelQs);
-      generateQuestions(itQs, "itQuestions", "it");
-      showSection("it");
-      startTimer("itTimer", 300, submitIT);
-    }
-
-    function submitIT() {
-      scores.it = gradeQuiz("it_q", itQs);
-      showSection("typing");
-      startTimer("typingTimer", 120, endTyping);
-    }
-
-    function endTyping() {
-      clearInterval(activeTimer);
-      const original = document.getElementById("typingText").innerText.trim();
-      const typed = document.getElementById("typingInput").value.trim();
-      const wpm = Math.round(typed.split(/\s+/).length / 2);
-      scores.typing = wpm;
-      showResults();
-    }
-
-    function gradeQuiz(namePrefix, qset) {
-      let score = 0;
-      qset.forEach((q, i) => {
-        const selected = document.querySelector(`input[name="${namePrefix}${i}"]:checked`);
-        if (selected && parseInt(selected.value) === q.a) score++;
-      });
-      return score;
-    }
-
-    function showResults() {
-      showSection("result");
-      const div = document.getElementById("scoreDisplay");
-      div.innerHTML = `
-        <p><strong>Name:</strong> ${user}</p>
-        <p><strong>Excel Score:</strong> ${scores.excel} / 10</p>
-        <p><strong>IT & CSS Score:</strong> ${scores.it} / 10</p>
-        <p><strong>Typing Speed:</strong> ${scores.typing} WPM</p>
-      `;
-    }
-
-    function downloadResults() {
-      const blob = new Blob([`Name: ${user}\nExcel: ${scores.excel}/10\nIT & CSS: ${scores.it}/10\nTyping: ${scores.typing} WPM`], {type: "text/plain"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${user.replace(/\s+/g, "_")}_SecureExpress_Test.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
-  </script>
-</body>
-</html>
+        <li>Basic Computer Questions: <strong>2 Minutes</strong></li>
+        <li>IT/Customer Service Questions: <stro
