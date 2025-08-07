@@ -2,94 +2,184 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Secure Express Candidate Test</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Secure Express CSS Practical Test</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Roboto', sans-serif; background:#f4f4f4; margin:0; padding:20px;}
-    .container { max-width:900px; margin:auto; background:#fff; padding:30px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
-    h1,h2 { color:#d32f2f; }
-    .hidden { display:none; }
-    .typing-area { border:1px solid #ccc; padding:15px; border-radius:5px; background:#fefefe; line-height:1.6; margin-bottom:10px; }
-    .word { padding:2px 4px; margin:1px; display:inline-block; }
-    .correct { background-color:#c8e6c9; }
-    .incorrect { background-color:#ffcdd2; }
-    textarea { width:100%; padding:10px; margin-top:10px; font-size:16px; }
-    button { background:#d32f2f; color:#fff; padding:10px 20px; border:none; margin-top:10px; cursor:pointer; font-size:16px; }
-    button:hover { background:#b71c1c; }
-    @media screen and (max-width:600px) {
-      .container { padding:15px;}
-      textarea { font-size:14px; }
-      button { width:100%; }
-    }
-    .result { margin-top:20px; border-top:1px solid #ccc; padding-top:20px;}
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; margin: 0; }
+    .container { max-width: 900px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .hidden { display: none; }
+    h1, h2 { color: #b71c1c; }
+    button { background: #b71c1c; color: #fff; padding: 10px 20px; border: none; cursor: pointer; margin-top: 20px; }
+    button:hover { background: #d32f2f; }
+    textarea, input[type="text"] { width: 100%; padding: 10px; font-size: 16px; margin-top: 10px; }
+    .question { margin-bottom: 15px; }
+    .typing-area { border: 1px solid #ccc; padding: 10px; background: #fefefe; margin: 10px 0; }
+    .result-line { margin: 10px 0; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="https://play-lh.googleusercontent.com/secureexpress" alt="Secure Express logo" style="max-width:200px;"/>
-    <h1>Secure Express CSS Practical Test</h1>
+<div class="container">
+
+  <!-- Page 1: Intro -->
+  <div id="page1">
+    <h1>Secure Express Candidate Test</h1>
     <p>This test includes:</p>
     <ul>
-      <li>Typing Test: <strong>2 minutes</strong></li>
-      <li>Excel Quiz: <strong>2 minutes</strong></li>
-      <li>Customer Service Scenario Questions (on main page)</li>
+      <li>PC Knowledge Test – 2 minutes</li>
+      <li>Customer Service Scenario Test – 3 minutes</li>
+      <li>Typing Test – 2 minutes (100 words)</li>
     </ul>
-
-    <div id="customerService">
-      <h2>Customer Service Scenarios</h2>
-      <ol>
-        <li>Client complains driver is 10 min late, vehicle 500 m away. Best first response?
-          <br>A) Contact driver and call back.<br>B) It’s nearby, please wait.<br>C) I see it's close, I'll update driver and confirm shortly.<br>D) Escalate immediately.
-          <br><strong>Answer:</strong> C<br><em>Rationale: acknowledges issue, shows monitoring, action + closes loop.</em>
-        </li>
-        <li>Driver reports breakdown mid-trip with VIP onboard. Immediate priority?
-          <br>A) Notify client & advise alternative transport.<br>B) Contact tech support then inform client.<br>C) Confirm client safety/location, dispatch backup, notify client and ops.<br>D) Wait for full report before action.
-          <br><strong>Answer:</strong> C<br><em>Rationale: focuses on safety, proactive resolution, escalation.</em>
-        </li>
-        <li>Client can't request ride via app and needs urgent driver. Best response?
-          <br>A) Ask to restart or reinstall app first.<br>B) Log issue for IT, ask them to wait.<br>C) Dispatch driver manually, confirm with client, then report app issue.<br>D) Apologize, send PDF instructions to retry later.
-          <br><strong>Answer:</strong> C<br><em>Rationale: resolves urgent need first, maintains service level, escalates tech issue.</em>
-        </li>
-      </ol>
-    </div>
-
-    <div id="start">
-      <label>Enter your name:</label>
-      <input type="text" id="candidateName" />
-      <button onclick="startTypingTest()">Start Typing Test</button>
-    </div>
-
-    <div id="typingTest" class="hidden">
-      <h2>Typing Test (2 minutes)</h2>
-      <div id="displayText" class="typing-area"></div>
-      <textarea id="typedText" placeholder="Start typing here..." oninput="updateTyping()"></textarea>
-      <p>Time left: <span id="timer">120</span> seconds</p>
-      <button onclick="finishTypingEarly()">Finish Typing</button>
-    </div>
-
-    <div id="excelTest" class="hidden">
-      <h2>Excel Quiz (2 minutes)</h2>
-      <form id="excelForm">
-        <div id="quizQuestions"></div>
-        <p>Time left: <span id="quizTimer">120</span> seconds</p>
-        <button type="button" onclick="submitQuiz()">Submit Quiz</button>
-      </form>
-    </div>
-
-    <div id="results" class="hidden result">
-      <h2>Results</h2>
-      <p><strong>Name:</strong> <span id="resultName"></span></p>
-      <p><strong>Typing Speed:</strong> <span id="wpm"></span> WPM</p>
-      <p><strong>Typing Accuracy:</strong> <span id="accuracy"></span>%</p>
-      <p><strong>Excel Score:</strong> <span id="excelScore"></span>/10</p>
-      <a id="downloadLink" style="display:none;" download="results.txt">Download Your Results</a>
-    </div>
+    <label>Enter your full name:</label>
+    <input type="text" id="candidateName" />
+    <button onclick="startTest()">Start Test</button>
   </div>
 
-  <script>
-    // script logic same as previous; timers set to 120 seconds for both tests
-    // rendering paragraphs, quiz questions, submit logic unchanged
-  </script>
+  <!-- Page 2: PC Questions -->
+  <div id="page2" class="hidden">
+    <h2>PC Knowledge Test (10 Questions)</h2>
+    <p>Time left: <span id="timer1">120</span> seconds</p>
+    <div id="pcQuestions"></div>
+    <button onclick="endPC()">Submit PC Test</button>
+  </div>
+
+  <!-- Page 3: Customer Service -->
+  <div id="page3" class="hidden">
+    <h2>Customer Service Scenarios</h2>
+    <p>Time left: <span id="timer2">180</span> seconds</p>
+    <div id="csQuestions"></div>
+    <button onclick="endCS()">Submit CS Test</button>
+  </div>
+
+  <!-- Page 4: Typing Test -->
+  <div id="page4" class="hidden">
+    <h2>Typing Test (2 Minutes)</h2>
+    <p>Time left: <span id="timer3">120</span> seconds</p>
+    <div class="typing-area" id="typingParagraph"></div>
+    <textarea id="typedText" placeholder="Start typing here..."></textarea>
+    <button onclick="endTyping()">Finish Typing</button>
+  </div>
+
+  <!-- Page 5: Results -->
+  <div id="page5" class="hidden">
+    <h2>Results</h2>
+    <p class="result-line"><strong>Name:</strong> <span id="resultName"></span></p>
+    <p class="result-line"><strong>Typing Speed:</strong> <span id="wpm"></span> WPM</p>
+    <p class="result-line"><strong>Accuracy:</strong> <span id="accuracy"></span>%</p>
+    <p class="result-line"><strong>PC Score:</strong> <span id="pcScore"></span>/10</p>
+    <p class="result-line"><strong>Customer Service Score:</strong> <span id="csScore"></span>/3</p>
+    <a id="downloadLink" download="SecureExpress_Results.txt">Download Your Results</a>
+  </div>
+</div>
+
+<script>
+let pcQuestions = [
+  ["What is Google Chrome used for?", "C"],
+  ["What is Microsoft Outlook mainly used for?", "C"],
+  ["What does Microsoft Excel help you do?", "C"],
+  ["Which program is best for writing formal letters or reports?", "D"],
+  ["What is Microsoft PowerPoint used for?", "B"],
+  ["What does “right-clicking” with the mouse usually do?", "B"],
+  ["What does Ctrl + C do?", "B"],
+  ["What does Ctrl + V do?", "B"],
+  ["What does Ctrl + X do?", "A"],
+  ["What happens when you close a window without saving your document?", "C"]
+];
+
+let csQuestions = [
+  ["A client calls in complaining their driver is 10 minutes late. You see the vehicle is stationary 500m from the pickup location. What is the BEST first response?", "C"],
+  ["A driver calls to report a breakdown mid-trip with a VIP client onboard. What is your IMMEDIATE priority?", "C"],
+  ["A client emails saying they’re unable to request a ride through the app and urgently need a driver. What is the most appropriate response?", "C"]
+];
+
+let typingText = `Secure Express is committed to delivering reliable, professional, and secure transport services for every client. Our trained, uniformed drivers follow strict protocols to ensure safety, punctuality, and operational excellence. Each trip is carefully planned, monitored in real time, and supported by a dedicated operations team. Clients are notified before and during their journey, ensuring transparency and trust at every stage. We value discipline, accountability, and service quality. From school runs to executive transfers, our goal remains the same—safe, seamless, and dependable mobility. Secure Express sets the standard by putting safety and service first, every single time.`;
+
+document.getElementById("typingParagraph").innerText = typingText;
+
+function startTest() {
+  let name = document.getElementById("candidateName").value.trim();
+  if (!name) return alert("Enter your name first.");
+  document.getElementById("page1").classList.add("hidden");
+  document.getElementById("page2").classList.remove("hidden");
+  startTimer(120, "timer1", endPC);
+  generateQuestions(pcQuestions, "pcQuestions", 4);
+}
+
+function endPC() {
+  document.getElementById("page2").classList.add("hidden");
+  document.getElementById("page3").classList.remove("hidden");
+  startTimer(180, "timer2", endCS);
+  generateQuestions(csQuestions, "csQuestions", 4);
+}
+
+function endCS() {
+  document.getElementById("page3").classList.add("hidden");
+  document.getElementById("page4").classList.remove("hidden");
+  startTimer(120, "timer3", endTyping);
+}
+
+function endTyping() {
+  document.getElementById("page4").classList.add("hidden");
+  document.getElementById("page5").classList.remove("hidden");
+
+  let typed = document.getElementById("typedText").value.trim();
+  let typedWords = typed.split(/\s+/);
+  let referenceWords = typingText.split(/\s+/);
+  let correct = 0;
+  for (let i = 0; i < Math.min(typedWords.length, referenceWords.length); i++) {
+    if (typedWords[i] === referenceWords[i]) correct++;
+  }
+  let accuracy = ((correct / referenceWords.length) * 100).toFixed(2);
+  let wpm = Math.round(typedWords.length / 2);
+
+  document.getElementById("resultName").innerText = document.getElementById("candidateName").value;
+  document.getElementById("wpm").innerText = wpm;
+  document.getElementById("accuracy").innerText = accuracy;
+
+  let pcScore = calculateScore(pcQuestions);
+  let csScore = calculateScore(csQuestions);
+
+  document.getElementById("pcScore").innerText = pcScore;
+  document.getElementById("csScore").innerText = csScore;
+
+  let resultText = `Name: ${document.getElementById("candidateName").value}\nTyping Speed: ${wpm} WPM\nAccuracy: ${accuracy}%\nPC Score: ${pcScore}/10\nCS Score: ${csScore}/3`;
+  let blob = new Blob([resultText], { type: 'text/plain' });
+  document.getElementById("downloadLink").href = URL.createObjectURL(blob);
+}
+
+function generateQuestions(questions, containerId, optionsCount) {
+  let container = document.getElementById(containerId);
+  container.innerHTML = '';
+  questions.forEach((q, i) => {
+    let div = document.createElement("div");
+    div.classList.add("question");
+    div.innerHTML = `<strong>${i + 1}. ${q[0]}</strong><br>`;
+    ["A", "B", "C", "D"].slice(0, optionsCount).forEach(opt => {
+      div.innerHTML += `<label><input type="radio" name="q${containerId}${i}" value="${opt}" /> ${opt}</label><br>`;
+    });
+    container.appendChild(div);
+  });
+}
+
+function calculateScore(questions) {
+  let score = 0;
+  questions.forEach((q, i) => {
+    let name = document.querySelector(`input[name^="q"][name$="${i}"]:checked`);
+    if (name && name.value === q[1]) score++;
+  });
+  return score;
+}
+
+function startTimer(seconds, displayId, callback) {
+  let time = seconds;
+  let timer = setInterval(() => {
+    document.getElementById(displayId).innerText = time;
+    time--;
+    if (time < 0) {
+      clearInterval(timer);
+      callback();
+    }
+  }, 1000);
+}
+</script>
 </body>
 </html>
