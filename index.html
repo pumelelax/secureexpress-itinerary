@@ -119,6 +119,12 @@ let csTimeLeft = 180;
 let typingTimeLeft = 120;
 let pcTimerId, csTimerId, typingTimerId;
 
+/* Scores */
+let pcScore = 0;
+let csScore = 0;
+let wpm = 0;
+let accuracy = 0;
+
 /* Question Data */
 const pcQuestions = [
   { q: "What is Google Chrome used for?", options: ["Writing documents", "Sending emails", "Browsing the internet", "Creating spreadsheets"], answer: "C" },
@@ -168,17 +174,20 @@ const csQuestions = [
 
 const typingTextSample = `Secure Express is committed to providing safe, reliable, and efficient transport services. Our drivers are trained, monitored, and always in uniform. Each ride is tracked in real time to ensure customer satisfaction. We go beyond traditional ride-hailing by owning our vehicles and controlling the full client experience from pickup to drop-off. This level of service builds trust and consistency with our valued clients.`;
 
-/* Page Controls */
+/* Show page */
 function showPage(index) {
   pages.forEach((id, i) => {
     document.getElementById(id).classList.toggle('active', i === index);
   });
   currentPage = index;
+
+  // Start timers when appropriate page is shown
   if(index === 1) startPCTimer();
-  if(index === 2) startCSTimer();
-  if(index === 3) startTypingTimer();
+  else if(index === 2) startCSTimer();
+  else if(index === 3) startTypingTimer();
 }
 
+/* Start test */
 function startTest() {
   const nameInput = document.getElementById('candidateName').value.trim();
   if (!nameInput) {
@@ -190,7 +199,7 @@ function startTest() {
   showPage(1);
 }
 
-/* --- PC Section --- */
+/* Load PC Questions */
 function loadPCQuestions() {
   const container = document.getElementById('pcQuestions');
   container.innerHTML = '';
@@ -202,7 +211,7 @@ function loadPCQuestions() {
     }).join('');
     container.appendChild(div);
   });
-  document.getElementById('pcNextBtn').disabled = true; // disable next until time ends or submit
+  document.getElementById('pcNextBtn').disabled = true;
 }
 
 /* PC Timer */
@@ -216,13 +225,13 @@ function startPCTimer() {
     if(pcTimeLeft <= 0) {
       clearInterval(pcTimerId);
       timerEl.textContent = 'Time is up!';
-      document.querySelectorAll('#pcQuestions input').forEach(el => el.disabled = true);
+      disableInputs('pcQuestions');
       document.getElementById('pcNextBtn').disabled = false;
     }
   }, 1000);
 }
 
-/* --- Customer Service Section --- */
+/* Load Customer Service Questions */
 function loadCSQuestions() {
   const container = document.getElementById('csQuestions');
   container.innerHTML = '';
@@ -237,7 +246,9 @@ function loadCSQuestions() {
   document.getElementById('csNextBtn').disabled = true;
 }
 
+/* Customer Service Timer */
 function startCSTimer() {
+  loadCSQuestions();
   csTimeLeft = 180;
   const timerEl = document.getElementById('csTimer');
   document.getElementById('csNextBtn').disabled = true;
@@ -247,27 +258,21 @@ function startCSTimer() {
     if(csTimeLeft <= 0) {
       clearInterval(csTimerId);
       timerEl.textContent = 'Time is up!';
-      document.querySelectorAll('#csQuestions input').forEach(el => el.disabled = true);
+      disableInputs('csQuestions');
       document.getElementById('csNextBtn').disabled = false;
     }
   }, 1000);
 }
 
-/* --- Typing Section --- */
-function loadTypingTest() {
-  document.getElementById('typingText').innerText = typingTextSample;
-  document.getElementById('typingContainer').innerText = '';
-  document.getElementById('finishTypingBtn').disabled = true;
-  typingTimeLeft = 120;
-}
-
+/* Typing Timer */
 function startTypingTimer() {
   loadTypingTest();
   typingTimeLeft = 120;
   const timerEl = document.getElementById('typingTimer');
   document.getElementById('finishTypingBtn').disabled = false;
-  document.getElementById('typingContainer').contentEditable = true;
-  document.getElementById('typingContainer').focus();
+  const typingContainer = document.getElementById('typingContainer');
+  typingContainer.contentEditable = true;
+  typingContainer.focus();
 
   typingTimerId = setInterval(() => {
     typingTimeLeft--;
@@ -280,33 +285,47 @@ function startTypingTimer() {
   }, 1000);
 }
 
+/* Load typing test text */
+function loadTypingTest() {
+  document.getElementById('typingText').innerText = typingTextSample;
+  document.getElementById('typingContainer').innerText = '';
+  document.getElementById('finishTypingBtn').disabled = true;
+}
+
 /* Disable editing of prior words on space key */
 document.getElementById('typingContainer').addEventListener('keydown', function(e){
   if(e.key === ' ' || e.key === 'Spacebar') {
     e.preventDefault();
-    let text = this.innerText.trim();
-    if(text.length === 0) return; // no text typed yet
-    // Append a non-editable locked word + a space
+    const container = this;
+    let text = container.innerText.trim();
+
+    if(text.length === 0) return; // nothing typed
+
+    // Append locked word span
     const lockedSpan = document.createElement('span');
     lockedSpan.textContent = text + ' ';
     lockedSpan.style.color = '#333';
     lockedSpan.style.userSelect = 'none';
     lockedSpan.style.pointerEvents = 'none';
-    // Replace editable container content with all locked words + new span
-    const container = this;
+
+    // Clear container and append locked word
     container.innerText = '';
     container.appendChild(lockedSpan);
-    // Focus at the end and allow new word typing
-    const br = document.createElement('br');
-    container.appendChild(br);
+
+    // Add space for new word
+    const spaceText = document.createTextNode('\u00A0');
+    container.appendChild(spaceText);
+
     placeCaretAtEnd(container);
+    document.getElementById('finishTypingBtn').disabled = false; // Enable finish button on first word typed
   }
 });
 
-/* Utility to place caret at end */
+/* Place caret at end of contenteditable */
 function placeCaretAtEnd(el) {
   el.focus();
-  if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+  if (typeof window.getSelection != "undefined"
+      && typeof document.createRange != "undefined") {
     const range = document.createRange();
     range.selectNodeContents(el);
     range.collapse(false);
@@ -316,25 +335,92 @@ function placeCaretAtEnd(el) {
   }
 }
 
-/* Finish typing */
+/* Disable all inputs inside a container by id */
+function disableInputs(containerId) {
+  const inputs = document.getElementById(containerId).querySelectorAll('input');
+  inputs.forEach(input => input.disabled = true);
+}
+
+/* Finish Typing and calculate results */
 function finishTyping() {
   clearInterval(typingTimerId);
   document.getElementById('typingTimer').textContent = 'Test finished';
-  document.getElementById('typingContainer').contentEditable = false;
+  const typingContainer = document.getElementById('typingContainer');
+  typingContainer.contentEditable = false;
   document.getElementById('finishTypingBtn').disabled = true;
 
-  // Calculate WPM and accuracy
-  const typedText = document.getElementById('typingContainer').innerText.trim();
+  // Get typed text as words
+  const typedText = typingContainer.innerText.trim();
   const typedWords = typedText.split(/\s+/).filter(Boolean);
   const originalWords = typingTextSample.split(/\s+/);
 
-  // Accuracy by comparing words one by one
+  // Calculate accuracy
   let correctWords = 0;
   for(let i=0; i < Math.min(typedWords.length, originalWords.length); i++) {
     if(typedWords[i] === originalWords[i]) correctWords++;
   }
-  let accuracy = ((correctWords / originalWords.length) * 100).toFixed(2);
-  let wpm = Math.round(typedWords.length / 2); // 2 min test, so words/2 = WPM
+  accuracy = ((correctWords / originalWords.length) * 100).toFixed(2);
+  wpm = Math.round(typedWords.length / 2); // 2 minutes test
 
-  // Save results to variables for final summary
- 
+  // Save results and enable next button
+  showTypingResults();
+  document.getElementById('typingContainer').blur();
+}
+
+/* Show typing results */
+function showTypingResults() {
+  const resultsDiv = document.getElementById('typingResults');
+  resultsDiv.innerHTML = `Typing Speed: <strong>${wpm}</strong> WPM<br>Accuracy: <strong>${accuracy}%</strong>`;
+}
+
+/* Next Page navigation */
+function nextPage() {
+  if(currentPage === 1) {
+    pcScore = calculateScore('pcQuestions', pcQuestions);
+    clearInterval(pcTimerId);
+    showPage(2);
+  } else if(currentPage === 2) {
+    csScore = calculateScore('csQuestions', csQuestions);
+    clearInterval(csTimerId);
+    showPage(3);
+  } else if(currentPage === 3) {
+    clearInterval(typingTimerId);
+    showResults();
+    showPage(4);
+  }
+}
+
+/* Calculate score for multiple choice */
+function calculateScore(containerId, questions) {
+  const container = document.getElementById(containerId);
+  let score = 0;
+  questions.forEach((q, i) => {
+    const selected = container.querySelector(`input[name=${containerId.slice(0,2)}${i}]:checked`);
+    if(selected && selected.value === q.answer) score++;
+  });
+  return score;
+}
+
+/* Show final results */
+function showResults() {
+  document.getElementById('resultName').textContent = candidateName;
+  document.getElementById('pcScore').textContent = pcScore;
+  document.getElementById('csScore').textContent = csScore;
+  document.getElementById('wpm').textContent = wpm;
+  document.getElementById('accuracy').textContent = accuracy;
+  document.getElementById('downloadLink').style.display = 'inline';
+
+  const text = 
+`Candidate Name: ${candidateName}
+PC Knowledge Score: ${pcScore}/10
+Customer Service Score: ${csScore}/3
+Typing Speed: ${wpm} WPM
+Typing Accuracy: ${accuracy}%
+`;
+
+  const blob = new Blob([text], {type: 'text/plain'});
+  document.getElementById('downloadLink').href = URL.createObjectURL(blob);
+}
+
+function formatTime(seconds) {
+  const m = Math
