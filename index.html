@@ -94,7 +94,7 @@
   <p>Type the text below as quickly and accurately as you can. Once you press space, the word will be locked and you cannot edit it again.</p>
   <div id="typingText" style="background:#eee; padding:10px; border-radius:4px; max-height: 150px; overflow-y:auto; font-size:16px; user-select:none;"></div>
   <div id="typingContainer" contenteditable="true" spellcheck="false" aria-label="Typing test input"></div>
-  <button id="finishTypingBtn" onclick="finishTyping()" disabled>Finish</button>
+  <button id="finishTypingBtn" onclick="finishTypingAndNext()" disabled>Finish</button>
   <div id="typingResults" style="margin-top:20px; font-weight:bold;"></div>
 </div>
 
@@ -105,7 +105,7 @@
   <p><strong>Typing Accuracy (%):</strong> <span id="accuracy"></span></p>
   <p><strong>PC Score:</strong> <span id="pcScore"></span>/10</p>
   <p><strong>Customer Service Score:</strong> <span id="csScore"></span>/3</p>
-  <a id="downloadLink" download="SecureExpress_Results.txt">Download Your Results</a>
+  <a id="downloadLink" download="SecureExpress_Results.txt" style="display:none;">Download Your Results</a>
 </div>
 
 <script>
@@ -280,7 +280,7 @@ function startTypingTimer() {
     if(typingTimeLeft <= 0) {
       clearInterval(typingTimerId);
       timerEl.textContent = 'Time is up!';
-      finishTyping();
+      finishTypingAndNext();
     }
   }, 1000);
 }
@@ -341,8 +341,8 @@ function disableInputs(containerId) {
   inputs.forEach(input => input.disabled = true);
 }
 
-/* Finish Typing and calculate results */
-function finishTyping() {
+/* Finish Typing and calculate results, then go to results page */
+function finishTypingAndNext() {
   clearInterval(typingTimerId);
   document.getElementById('typingTimer').textContent = 'Test finished';
   const typingContainer = document.getElementById('typingContainer');
@@ -362,9 +362,10 @@ function finishTyping() {
   accuracy = ((correctWords / originalWords.length) * 100).toFixed(2);
   wpm = Math.round(typedWords.length / 2); // 2 minutes test
 
-  // Save results and enable next button
+  // Show results and advance to results page
   showTypingResults();
-  document.getElementById('typingContainer').blur();
+  showResults();
+  showPage(4); // Results page index
 }
 
 /* Show typing results */
@@ -383,10 +384,6 @@ function nextPage() {
     csScore = calculateScore('csQuestions', csQuestions);
     clearInterval(csTimerId);
     showPage(3);
-  } else if(currentPage === 3) {
-    clearInterval(typingTimerId);
-    showResults();
-    showPage(4);
   }
 }
 
@@ -408,19 +405,12 @@ function showResults() {
   document.getElementById('csScore').textContent = csScore;
   document.getElementById('wpm').textContent = wpm;
   document.getElementById('accuracy').textContent = accuracy;
-  document.getElementById('downloadLink').style.display = 'inline';
+  const downloadLink = document.getElementById('downloadLink');
+  downloadLink.style.display = 'inline';
 
   const text = 
 `Candidate Name: ${candidateName}
 PC Knowledge Score: ${pcScore}/10
 Customer Service Score: ${csScore}/3
 Typing Speed: ${wpm} WPM
-Typing Accuracy: ${accuracy}%
-`;
-
-  const blob = new Blob([text], {type: 'text/plain'});
-  document.getElementById('downloadLink').href = URL.createObjectURL(blob);
-}
-
-function formatTime(seconds) {
-  const m = Math
+Typing Accuracy: ${accuracy
