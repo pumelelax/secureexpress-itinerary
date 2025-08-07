@@ -1,416 +1,214 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Secure Express Candidate Test</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    background: #f4f4f4;
-    margin: 0;
-  }
-  .page {
-    display: none;
-  }
-  .active {
-    display: block;
-  }
-  .question {
-    margin-bottom: 20px;
-  }
-  .timer {
-    font-weight: bold;
-    color: red;
-    margin-bottom: 20px;
-    font-size: 1.2em;
-    text-align: right;
-  }
-  button {
-    padding: 10px 20px;
-    font-weight: bold;
-    background: #b71c1c;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-  button:hover {
-    background: #d32f2f;
-  }
-  textarea {
-    width: 100%;
-    height: 150px;
-    margin-top: 10px;
-    font-size: 16px;
-    resize: vertical;
-    spellcheck: false; /* disables red underline */
-  }
-  #typingContainer {
-    border: 1px solid #ccc;
-    background: white;
-    padding: 10px;
-    min-height: 100px;
-    font-size: 16px;
-    line-height: 1.5em;
-    white-space: pre-wrap;
-    user-select: text;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Candidate Assessment Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question {
+      margin-bottom: 15px;
+    }
+    .answers label {
+      display: block;
+      margin: 5px 0;
+    }
+    .timer {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 15px;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <div id="page1">
+      <h2>Candidate Information</h2>
+      <p>Please enter your name to begin the assessment. The test includes:</p>
+      <ul>
+        <li>10 PC Knowledge questions (3 minutes)</li>
+        <li>3 Customer Service scenario questions (3 minutes)</li>
+        <li>Typing test (100 words, measures WPM and Accuracy - 3 minutes)</li>
+      </ul>
+      <input type="text" id="candidateName" placeholder="Enter your full name" />
+      <button onclick="startTest()">Start Test</button>
+    </div>
 
-<div id="page1" class="page active">
-  <h2>Secure Express Candidate Test</h2>
-  <p>Please enter your full name to begin:</p>
-  <input type="text" id="candidateName" placeholder="Your full name" />
-  <p>This test includes:</p>
-  <ul>
-    <li>10 Basic PC Knowledge Questions (2 minutes)</li>
-    <li>3 Customer Service Scenario Questions (3 minutes)</li>
-    <li>Typing Test (2 minutes, 100 words, word-by-word lock)</li>
-  </ul>
-  <button onclick="startTest()">Start Test</button>
-</div>
+    <div id="page2" class="hidden">
+      <div class="timer" id="timer1"></div>
+      <h2>PC Knowledge Questions</h2>
+      <form id="pcForm">
+        <!-- PC Questions will be inserted here -->
+      </form>
+      <button onclick="nextPage('page2','page3')">Next</button>
+    </div>
 
-<div id="page2" class="page">
-  <div class="timer" id="pcTimer">Time left: 02:00</div>
-  <h3>Basic PC Knowledge</h3>
-  <div id="pcQuestions"></div>
-  <button id="pcNextBtn" onclick="nextPage()" disabled>Next: Customer Service</button>
-</div>
+    <div id="page3" class="hidden">
+      <div class="timer" id="timer2"></div>
+      <h2>Customer Service Questions</h2>
+      <form id="csForm">
+        <!-- CS Questions will be inserted here -->
+      </form>
+      <button onclick="nextPage('page3','page4')">Next</button>
+    </div>
 
-<div id="page3" class="page">
-  <div class="timer" id="csTimer">Time left: 03:00</div>
-  <h3>Customer Service Questions</h3>
-  <div id="csQuestions"></div>
-  <button id="csNextBtn" onclick="nextPage()" disabled>Next: Typing Test</button>
-</div>
+    <div id="page4" class="hidden">
+      <div class="timer" id="timer3"></div>
+      <h2>Typing Test</h2>
+      <p>Type the following paragraph as accurately and quickly as possible.</p>
+      <pre id="typingText">
+At Secure Express, we are committed to safety, reliability, and professionalism in every ride. Our fleet is company-owned, and our drivers are rigorously trained, uniformed, and monitored to ensure compliance with strict operational standards. Whether it’s a scheduled trip or an urgent request, our team responds efficiently. Punctuality, discipline, and clear communication are non-negotiable in our service. We track every trip to maintain security and peace of mind for all clients. Choose Secure Express not just for transport, but for a trusted, seamless experience from pickup to drop-off. Excellence in service is not our goal—it’s our minimum standard.
+      </pre>
+      <textarea id="typingInput" placeholder="Start typing here..."></textarea>
+      <button onclick="submitTest()">Submit Test</button>
+    </div>
 
-<div id="page4" class="page">
-  <div class="timer" id="typingTimer">Time left: 02:00</div>
-  <h3>Typing Test</h3>
-  <p>Type the text below as quickly and accurately as you can. Once you press space, the word will be locked and you cannot edit it again.</p>
-  <div id="typingText" style="background:#eee; padding:10px; border-radius:4px; max-height: 150px; overflow-y:auto; font-size:16px; user-select:none;"></div>
-  <div id="typingContainer" contenteditable="true" spellcheck="false" aria-label="Typing test input"></div>
-  <button id="finishTypingBtn" onclick="finishTypingAndNext()" disabled>Finish</button>
-  <div id="typingResults" style="margin-top:20px; font-weight:bold;"></div>
-</div>
+    <div id="resultPage" class="hidden">
+      <h2>Test Complete</h2>
+      <p id="summary"></p>
+    </div>
+  </div>
 
-<div id="page5" class="page">
-  <h2>Results</h2>
-  <p><strong>Name:</strong> <span id="resultName"></span></p>
-  <p><strong>Typing Speed (WPM):</strong> <span id="wpm"></span></p>
-  <p><strong>Typing Accuracy (%):</strong> <span id="accuracy"></span></p>
-  <p><strong>PC Score:</strong> <span id="pcScore"></span>/10</p>
-  <p><strong>Customer Service Score:</strong> <span id="csScore"></span>/3</p>
-  <a id="downloadLink" download="SecureExpress_Results.txt" style="display:none;">Download Your Results</a>
-</div>
+  <script>
+    let currentTimer;
+    const durations = { timer1: 180, timer2: 180, timer3: 180 };
 
-<script>
-const pages = ['page1', 'page2', 'page3', 'page4', 'page5'];
-let currentPage = 0;
-let candidateName = '';
+    const pcQuestions = [
+      ["What is Google Chrome used for?", ["A) Writing documents", "B) Sending emails", "C) Browsing the internet", "D) Creating spreadsheets"], "C"],
+      ["What is Microsoft Outlook mainly used for?", ["A) Drawing pictures", "B) Editing videos", "C) Sending and receiving emails", "D) Writing reports"], "C"],
+      ["What does Microsoft Excel help you do?", ["A) Watch movies", "B) Browse the internet", "C) Create and calculate spreadsheets", "D) Write letters"], "C"],
+      ["Which program is best for writing formal letters or reports?", ["A) PowerPoint", "B) Excel", "C) WordPad", "D) Microsoft Word"], "D"],
+      ["What is Microsoft PowerPoint used for?", ["A) Editing photos", "B) Making presentations", "C) Managing files", "D) Sending messages"], "B"],
+      ["What does “right-clicking” with the mouse usually do?", ["A) Selects text", "B) Opens a shortcut or context menu", "C) Opens a file", "D) Zooms in"], "B"],
+      ["What does Ctrl + C do?", ["A) Cuts the text", "B) Copies the text", "C) Pastes the text", "D) Closes the program"], "B"],
+      ["What does Ctrl + V do?", ["A) Views the document", "B) Pastes the copied or cut item", "C) Verifies spelling", "D) Opens a video"], "B"],
+      ["What does Ctrl + X do?", ["A) Cuts the selected item", "B) Exits the window", "C) Extends the screen", "D) Copies the text"], "A"],
+      ["What happens when you close a window without saving your document?", ["A) It saves automatically", "B) It sends an email", "C) You might lose your changes", "D) It prints the document"], "C"]
+    ];
 
-/* Timer variables */
-let pcTimeLeft = 120;
-let csTimeLeft = 180;
-let typingTimeLeft = 120;
-let pcTimerId, csTimerId, typingTimerId;
+    const csQuestions = [
+      ["A client calls in complaining their driver is 10 minutes late. You see the vehicle is stationary 500m from the pickup location. What is the BEST first response?", ["A) I will contact the driver and call you back.", "B) The vehicle is nearby; please wait, it should arrive shortly.", "C) I can see the vehicle is close. I’ll update the driver now and confirm with you shortly.", "D) I will escalate this to operations immediately."], "C"],
+      ["A driver calls to report a breakdown mid-trip with a VIP client onboard. What is your IMMEDIATE priority?", ["A) Notify the client directly and advise them to arrange alternative transport.", "B) Contact technical support and then inform the client afterward.", "C) Confirm the client’s safety and location, then dispatch backup while notifying the client and operations.", "D) Wait for the driver to give a full report before taking action."], "C"],
+      ["A client emails saying they’re unable to request a ride through the app and urgently need a driver. What is the most appropriate response?", ["A) Ask them to restart the app or reinstall it before you assist.", "B) Log the issue for IT, advise the client to wait, and follow up once the app works.", "C) Manually dispatch a driver immediately, confirm with the client, and then report the app issue for investigation.", "D) Apologize and send the app instructions PDF, advising them to try again before you can help."], "C"]
+    ];
 
-/* Scores */
-let pcScore = 0;
-let csScore = 0;
-let wpm = 0;
-let accuracy = 0;
-
-/* Question Data */
-const pcQuestions = [
-  { q: "What is Google Chrome used for?", options: ["Writing documents", "Sending emails", "Browsing the internet", "Creating spreadsheets"], answer: "C" },
-  { q: "What is Microsoft Outlook mainly used for?", options: ["Drawing pictures", "Editing videos", "Sending and receiving emails", "Writing reports"], answer: "C" },
-  { q: "What does Microsoft Excel help you do?", options: ["Watch movies", "Browse the internet", "Create and calculate spreadsheets", "Write letters"], answer: "C" },
-  { q: "Which program is best for writing formal letters or reports?", options: ["PowerPoint", "Excel", "WordPad", "Microsoft Word"], answer: "D" },
-  { q: "What is Microsoft PowerPoint used for?", options: ["Editing photos", "Making presentations", "Managing files", "Sending messages"], answer: "B" },
-  { q: "What does “right-clicking” with the mouse usually do?", options: ["Selects text", "Opens a shortcut or context menu", "Opens a file", "Zooms in"], answer: "B" },
-  { q: "What does Ctrl + C do?", options: ["Cuts the text", "Copies the text", "Pastes the text", "Closes the program"], answer: "B" },
-  { q: "What does Ctrl + V do?", options: ["Views the document", "Pastes the copied or cut item", "Verifies spelling", "Opens a video"], answer: "B" },
-  { q: "What does Ctrl + X do?", options: ["Cuts the selected item", "Exits the window", "Extends the screen", "Copies the text"], answer: "A" },
-  { q: "What happens when you close a window without saving your document?", options: ["It saves automatically", "It sends an email", "You might lose your changes", "It prints the document"], answer: "C" }
-];
-
-const csQuestions = [
-  {
-    q: "A client calls in complaining their driver is 10 minutes late. You see the vehicle is stationary 500m from the pickup location. What is the BEST first response?",
-    options: [
-      "I will contact the driver and call you back.",
-      "The vehicle is nearby; please wait, it should arrive shortly.",
-      "I can see the vehicle is close. I’ll update the driver now and confirm with you shortly.",
-      "I will escalate this to operations immediately."
-    ],
-    answer: "C"
-  },
-  {
-    q: "A driver calls to report a breakdown mid-trip with a VIP client onboard. What is your IMMEDIATE priority?",
-    options: [
-      "Notify the client directly and advise them to arrange alternative transport.",
-      "Contact technical support and then inform the client afterward.",
-      "Confirm the client’s safety and location, then dispatch backup while notifying the client and operations.",
-      "Wait for the driver to give a full report before taking action."
-    ],
-    answer: "C"
-  },
-  {
-    q: "A client emails saying they’re unable to request a ride through the app and urgently need a driver. What is the most appropriate response?",
-    options: [
-      "Ask them to restart the app or reinstall it before you assist.",
-      "Log the issue for IT, advise the client to wait, and follow up once the app works.",
-      "Manually dispatch a driver immediately, confirm with the client, and then report the app issue for investigation.",
-      "Apologize and send the app instructions PDF, advising them to try again before you can help."
-    ],
-    answer: "C"
-  }
-];
-
-const typingTextSample = `Secure Express is committed to providing safe, reliable, and efficient transport services. Our drivers are trained, monitored, and always in uniform. Each ride is tracked in real time to ensure customer satisfaction. We go beyond traditional ride-hailing by owning our vehicles and controlling the full client experience from pickup to drop-off. This level of service builds trust and consistency with our valued clients.`;
-
-/* Show page */
-function showPage(index) {
-  pages.forEach((id, i) => {
-    document.getElementById(id).classList.toggle('active', i === index);
-  });
-  currentPage = index;
-
-  // Start timers when appropriate page is shown
-  if(index === 1) startPCTimer();
-  else if(index === 2) startCSTimer();
-  else if(index === 3) startTypingTimer();
-}
-
-/* Start test */
-function startTest() {
-  const nameInput = document.getElementById('candidateName').value.trim();
-  if (!nameInput) {
-    alert("Please enter your full name.");
-    return;
-  }
-  candidateName = nameInput;
-  loadPCQuestions();
-  showPage(1);
-}
-
-/* Load PC Questions */
-function loadPCQuestions() {
-  const container = document.getElementById('pcQuestions');
-  container.innerHTML = '';
-  pcQuestions.forEach((q, i) => {
-    const div = document.createElement('div');
-    div.className = 'question';
-    div.innerHTML = `<strong>Q${i + 1}. ${q.q}</strong><br>` + q.options.map((opt, idx) => {
-      return `<label><input type="radio" name="pc${i}" value="${String.fromCharCode(65 + idx)}"> ${String.fromCharCode(65 + idx)}) ${opt}</label><br>`;
-    }).join('');
-    container.appendChild(div);
-  });
-  document.getElementById('pcNextBtn').disabled = true;
-}
-
-/* PC Timer */
-function startPCTimer() {
-  pcTimeLeft = 120;
-  const timerEl = document.getElementById('pcTimer');
-  document.getElementById('pcNextBtn').disabled = true;
-  pcTimerId = setInterval(() => {
-    pcTimeLeft--;
-    timerEl.textContent = `Time left: ${formatTime(pcTimeLeft)}`;
-    if(pcTimeLeft <= 0) {
-      clearInterval(pcTimerId);
-      timerEl.textContent = 'Time is up!';
-      disableInputs('pcQuestions');
-      document.getElementById('pcNextBtn').disabled = false;
+    function startTest() {
+      const name = document.getElementById("candidateName").value.trim();
+      if (!name) return alert("Please enter your name.");
+      document.getElementById("page1").classList.add("hidden");
+      document.getElementById("page2").classList.remove("hidden");
+      loadQuestions("pcForm", pcQuestions);
+      startTimer("timer1", "page2", "page3");
     }
-  }, 1000);
-}
 
-/* Load Customer Service Questions */
-function loadCSQuestions() {
-  const container = document.getElementById('csQuestions');
-  container.innerHTML = '';
-  csQuestions.forEach((q, i) => {
-    const div = document.createElement('div');
-    div.className = 'question';
-    div.innerHTML = `<strong>Q${i + 1}. ${q.q}</strong><br>` + q.options.map((opt, idx) => {
-      return `<label><input type="radio" name="cs${i}" value="${String.fromCharCode(65 + idx)}"> ${String.fromCharCode(65 + idx)}) ${opt}</label><br>`;
-    }).join('');
-    container.appendChild(div);
-  });
-  document.getElementById('csNextBtn').disabled = true;
-}
-
-/* Customer Service Timer */
-function startCSTimer() {
-  loadCSQuestions();
-  csTimeLeft = 180;
-  const timerEl = document.getElementById('csTimer');
-  document.getElementById('csNextBtn').disabled = true;
-  csTimerId = setInterval(() => {
-    csTimeLeft--;
-    timerEl.textContent = `Time left: ${formatTime(csTimeLeft)}`;
-    if(csTimeLeft <= 0) {
-      clearInterval(csTimerId);
-      timerEl.textContent = 'Time is up!';
-      disableInputs('csQuestions');
-      document.getElementById('csNextBtn').disabled = false;
+    function loadQuestions(formId, questions) {
+      const form = document.getElementById(formId);
+      questions.forEach((q, idx) => {
+        const div = document.createElement("div");
+        div.classList.add("question");
+        div.innerHTML = `<strong>${idx + 1}. ${q[0]}</strong><div class="answers">${q[1].map((opt, i) => `
+          <label><input type="radio" name="q${idx}" value="${"ABCD"[i]}" /> ${opt}</label>`).join("")}</div>`;
+        form.appendChild(div);
+      });
     }
-  }, 1000);
-}
 
-/* Typing Timer */
-function startTypingTimer() {
-  loadTypingTest();
-  typingTimeLeft = 120;
-  const timerEl = document.getElementById('typingTimer');
-  document.getElementById('finishTypingBtn').disabled = false;
-  const typingContainer = document.getElementById('typingContainer');
-  typingContainer.contentEditable = true;
-  typingContainer.focus();
-
-  typingTimerId = setInterval(() => {
-    typingTimeLeft--;
-    timerEl.textContent = `Time left: ${formatTime(typingTimeLeft)}`;
-    if(typingTimeLeft <= 0) {
-      clearInterval(typingTimerId);
-      timerEl.textContent = 'Time is up!';
-      finishTypingAndNext();
+    function nextPage(current, next) {
+      document.getElementById(current).classList.add("hidden");
+      document.getElementById(next).classList.remove("hidden");
+      if (next === "page3") {
+        loadQuestions("csForm", csQuestions);
+        startTimer("timer2", "page3", "page4");
+      } else if (next === "page4") {
+        startTimer("timer3", "page4", "resultPage");
+      }
     }
-  }, 1000);
-}
 
-/* Load typing test text */
-function loadTypingTest() {
-  document.getElementById('typingText').innerText = typingTextSample;
-  document.getElementById('typingContainer').innerText = '';
-  document.getElementById('finishTypingBtn').disabled = true;
-}
+    function startTimer(timerId, currentPage, nextPageId) {
+      let time = durations[timerId];
+      const timerDisplay = document.getElementById(timerId);
+      clearInterval(currentTimer);
+      currentTimer = setInterval(() => {
+        const min = String(Math.floor(time / 60)).padStart(2, '0');
+        const sec = String(time % 60).padStart(2, '0');
+        timerDisplay.textContent = `Time Remaining: ${min}:${sec}`;
+        time--;
+        if (time < 0) {
+          clearInterval(currentTimer);
+          document.getElementById(currentPage).classList.add("hidden");
+          document.getElementById(nextPageId).classList.remove("hidden");
+          if (nextPageId === "page3") {
+            loadQuestions("csForm", csQuestions);
+            startTimer("timer2", "page3", "page4");
+          } else if (nextPageId === "page4") {
+            startTimer("timer3", "page4", "resultPage");
+          } else if (nextPageId === "resultPage") {
+            submitTest();
+          }
+        }
+      }, 1000);
+    }
 
-/* Disable editing of prior words on space key */
-document.getElementById('typingContainer').addEventListener('keydown', function(e){
-  if(e.key === ' ' || e.key === 'Spacebar') {
-    e.preventDefault();
-    const container = this;
-    let text = container.innerText.trim();
+    function submitTest() {
+      clearInterval(currentTimer);
+      const typed = document.getElementById("typingInput").value.trim();
+      const original = document.getElementById("typingText").innerText.trim();
+      const typedWords = typed.split(/\s+/);
+      const originalWords = original.split(/\s+/);
 
-    if(text.length === 0) return; // nothing typed
+      let correct = 0;
+      typedWords.forEach((word, i) => {
+        if (word === originalWords[i]) correct++;
+      });
 
-    // Append locked word span
-    const lockedSpan = document.createElement('span');
-    lockedSpan.textContent = text + ' ';
-    lockedSpan.style.color = '#333';
-    lockedSpan.style.userSelect = 'none';
-    lockedSpan.style.pointerEvents = 'none';
+      const accuracy = ((correct / originalWords.length) * 100).toFixed(2);
+      const wpm = (typedWords.length / 3).toFixed(2); // assuming 3 minutes
 
-    // Clear container and append locked word
-    container.innerText = '';
-    container.appendChild(lockedSpan);
+      document.getElementById("page4").classList.add("hidden");
+      document.getElementById("resultPage").classList.remove("hidden");
 
-    // Add space for new word
-    const spaceText = document.createTextNode('\u00A0');
-    container.appendChild(spaceText);
-
-    placeCaretAtEnd(container);
-    document.getElementById('finishTypingBtn').disabled = false; // Enable finish button on first word typed
-  }
-});
-
-/* Place caret at end of contenteditable */
-function placeCaretAtEnd(el) {
-  el.focus();
-  if (typeof window.getSelection != "undefined"
-      && typeof document.createRange != "undefined") {
-    const range = document.createRange();
-    range.selectNodeContents(el);
-    range.collapse(false);
-    const sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
-}
-
-/* Disable all inputs inside a container by id */
-function disableInputs(containerId) {
-  const inputs = document.getElementById(containerId).querySelectorAll('input');
-  inputs.forEach(input => input.disabled = true);
-}
-
-/* Finish Typing and calculate results, then go to results page */
-function finishTypingAndNext() {
-  clearInterval(typingTimerId);
-  document.getElementById('typingTimer').textContent = 'Test finished';
-  const typingContainer = document.getElementById('typingContainer');
-  typingContainer.contentEditable = false;
-  document.getElementById('finishTypingBtn').disabled = true;
-
-  // Get typed text as words
-  const typedText = typingContainer.innerText.trim();
-  const typedWords = typedText.split(/\s+/).filter(Boolean);
-  const originalWords = typingTextSample.split(/\s+/);
-
-  // Calculate accuracy
-  let correctWords = 0;
-  for(let i=0; i < Math.min(typedWords.length, originalWords.length); i++) {
-    if(typedWords[i] === originalWords[i]) correctWords++;
-  }
-  accuracy = ((correctWords / originalWords.length) * 100).toFixed(2);
-  wpm = Math.round(typedWords.length / 2); // 2 minutes test
-
-  // Show results and advance to results page
-  showTypingResults();
-  showResults();
-  showPage(4); // Results page index
-}
-
-/* Show typing results */
-function showTypingResults() {
-  const resultsDiv = document.getElementById('typingResults');
-  resultsDiv.innerHTML = `Typing Speed: <strong>${wpm}</strong> WPM<br>Accuracy: <strong>${accuracy}%</strong>`;
-}
-
-/* Next Page navigation */
-function nextPage() {
-  if(currentPage === 1) {
-    pcScore = calculateScore('pcQuestions', pcQuestions);
-    clearInterval(pcTimerId);
-    showPage(2);
-  } else if(currentPage === 2) {
-    csScore = calculateScore('csQuestions', csQuestions);
-    clearInterval(csTimerId);
-    showPage(3);
-  }
-}
-
-/* Calculate score for multiple choice */
-function calculateScore(containerId, questions) {
-  const container = document.getElementById(containerId);
-  let score = 0;
-  questions.forEach((q, i) => {
-    const selected = container.querySelector(`input[name=${containerId.slice(0,2)}${i}]:checked`);
-    if(selected && selected.value === q.answer) score++;
-  });
-  return score;
-}
-
-/* Show final results */
-function showResults() {
-  document.getElementById('resultName').textContent = candidateName;
-  document.getElementById('pcScore').textContent = pcScore;
-  document.getElementById('csScore').textContent = csScore;
-  document.getElementById('wpm').textContent = wpm;
-  document.getElementById('accuracy').textContent = accuracy;
-  const downloadLink = document.getElementById('downloadLink');
-  downloadLink.style.display = 'inline';
-
-  const text = 
-`Candidate Name: ${candidateName}
-PC Knowledge Score: ${pcScore}/10
-Customer Service Score: ${csScore}/3
-Typing Speed: ${wpm} WPM
-Typing Accuracy: ${accuracy
+      document.getElementById("summary").innerHTML = `
+        <strong>Test Submitted.</strong><br />
+        Words Typed: ${typedWords.length}<br />
+        Accuracy: ${accuracy}%<br />
+        Words Per Minute (WPM): ${wpm}
+      `;
+    }
+  </script>
+</body>
+</html>
